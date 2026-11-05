@@ -28,7 +28,6 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      - run: python -m playwright install --with-deps chromium
       - name: Bot allumé
         # Arrêt propre après 345 minutes ; le lancement suivant prend le relais.
         run: timeout --signal=INT 345m python bot.py || [ $? -eq 124 ]
@@ -36,3 +35,4 @@ jobs:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ALLOWED_CHAT_IDS: ${{ secrets.ALLOWED_CHAT_IDS }}
+          NAVIGATEUR: chrome # Google Chrome est déjà installé sur les serveurs GitHub
