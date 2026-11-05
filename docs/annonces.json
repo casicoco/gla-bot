@@ -106,5 +106,113 @@
     "raison": "Cette annonce semble être la même voiture que l'annonce #1 déjà suivie (même modèle, année, 10 215 km, 37 470 €, 11/15 critères). C'est une bonne candidate presque neuve et bien équipée, donc la décision « À contacter » reste valable. Il faut vérifier s'il s'agit d'un doublon et éviter de la suivre deux fois.",
     "date": "2026-11-05",
     "id": 1
+  },
+  {
+    "titre": "Mercedes-Benz GLA 180 AMG Line",
+    "annee": 2025,
+    "kilometrage": 14683,
+    "prix": 39980,
+    "vendeur": "Concessionnaire LUEG, Essen, Allemagne",
+    "url": "https://tinyurl.com/ft6b3978",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "Blanc Polarweiß (blanc uni)"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "doute",
+        "detail": "Annonce indique seulement « Garantie »"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "non",
+        "detail": "Absent de la liste, barres de toit en aluminium poli"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "oui",
+        "detail": "Avec assistant de feux de route adaptatif"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "oui",
+        "detail": "Premium Plus (inclut le Premium)"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "oui",
+        "detail": "Park-Paket avec caméra 360°"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "oui",
+        "detail": "Toit ouvrant panoramique"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": "Chargeur sans fil à l'avant"
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": "Avec Android Auto"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": "Conducteur et passager"
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "oui",
+        "detail": "Attelage escamotable"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "non",
+        "detail": "Pneus été (Sommerreifen)"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": "Hayon électrique avec HANDS-FREE ACCESS"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "oui",
+        "detail": "Sièges avant électriques avec mémoire"
+      }
+    ],
+    "points_forts": [
+      "12 critères sur 15 confirmés",
+      "Pack Premium Plus",
+      "Caméra 360°, toit panoramique et attelage escamotable",
+      "Sièges avant électriques avec mémoire",
+      "Voiture très récente (10/2025)"
+    ],
+    "points_faibles": [
+      "Pas de Pack Nuit",
+      "Pneus été au lieu de 4 saisons",
+      "Label Junge Sterne non confirmé",
+      "Moteur GLA 180, moins puissant que le GLA 200",
+      "Plus chère que l'annonce #1 (39 980 € contre 37 470 €) avec plus de kilomètres"
+    ],
+    "questions_vendeur": [
+      "Cette voiture est-elle vendue avec le label Junge Sterne ? Sinon, quelle garantie est comprise et pour combien de temps ?",
+      "Pouvez-vous confirmer que la voiture n'a pas le Pack Nuit ? Vous avez d'autres GLA blancs avec le Pack Nuit, comme le GLA 180 Special Edition à 39 865 €.",
+      "Est-il possible de remplacer les pneus été par des pneus 4 saisons, et à quel prix ?"
+    ],
+    "decision": "À étudier",
+    "raison": "Elle coche 12 critères sur 15, un de plus que l'annonce #1, mais elle coûte environ 2 500 € de plus avec plus de kilomètres et un moteur 180 moins puissant. Le label Junge Sterne reste à confirmer et le Pack Nuit manque. Le prix est à discuter, et le GLA 180 Special Edition du même vendeur avec Pack Nuit mérite aussi d'être regardé.",
+    "date": "2026-11-05",
+    "id": 2
   }
 ]
