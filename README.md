@@ -8,37 +8,37 @@ Chaque annonce est ajoutée à la page de suivi : https://casicoco.github.io/gla
 - `lecteur.py` : ouvre la page dans Chrome, accepte les cookies, déplie les « voir plus »
 - `suivi.py` : enregistre chaque annonce dans `docs/annonces.json` (la page de suivi)
 
-## Pourquoi le bot tourne à la maison
+## Fonctionnement
 
-mobile.de bloque les serveurs (GitHub, hébergeurs…) mais accepte les connexions
-de particuliers. Le bot tourne donc sur un ordinateur à la maison, qui doit rester allumé.
+Le bot tourne en continu sur GitHub Actions (`.github/workflows/bot.yml`).
+mobile.de bloque les serveurs : quand un lien ne s'ouvre pas, le bot le met
+**en attente** (`docs/en_attente.json`, visible sur la page de suivi et avec `/attente`
+dans Telegram). On les traite ensuite depuis l'ordinateur de la maison, dont la
+connexion est acceptée par mobile.de. Les réponses arrivent sur Telegram comme d'habitude.
 
-## Installation (une seule fois, Mac ou Linux)
+## Traiter les liens en attente (ordinateur de la maison)
+
+Première fois seulement (Mac ou Linux) :
 
 ```bash
 gh repo clone casicoco/gla-bot ~/gla-bot
-cd ~/gla-bot
-python3 -m venv .venv
-.venv/bin/pip install -r requirements.txt
-.venv/bin/python -m playwright install chromium
+cd ~/gla-bot && python3 -m venv .venv && .venv/bin/pip install -r requirements.txt && .venv/bin/python -m playwright install chromium
 cp .env.example .env
 ```
 
-Puis remplir `.env` (token Telegram, clé Claude, identifiants autorisés).
+Remplir `.env` (mêmes clés que sur GitHub, garder `NAVIGATEUR=chrome`).
 Sur Windows, remplacer `.venv/bin/` par `.venv\Scripts\`.
 
-## Lancer le bot
+Ensuite, à chaque fois :
 
 ```bash
-cd ~/gla-bot && git pull && .venv/bin/python bot.py
+cd ~/gla-bot && git pull && .venv/bin/python traiter_attente.py
 ```
 
-Laisser la fenêtre ouverte. Pour arrêter : Ctrl+C.
-
-Ne pas lancer en même temps le workflow GitHub `bot.yml` (secours) : Telegram refuse deux
-bots actifs en même temps.
+Le script s'arrête tout seul quand tous les liens sont traités. Le bot sur GitHub peut
+continuer à tourner pendant ce temps.
 
 ## Astuce
 
-Si un site bloque quand même la lecture, le bot le dit : il suffit d'envoyer des captures
-d'écran de l'annonce ou de copier-coller son texte.
+Si un site bloque même depuis la maison, le lien reste en attente : il suffit alors
+d'envoyer des captures d'écran de l'annonce ou de copier-coller son texte.

@@ -8,7 +8,6 @@ import asyncio
 import base64
 import logging
 import os
-import sys
 
 import anthropic
 from telegram import Update
@@ -33,6 +32,8 @@ if _env.exists():
 
 from criteres import CRITERES, MODELE
 from lecteur import lire, trouver_liens
+import attente
+import suivi
 from suivi import enregistrer
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
@@ -120,24 +121,22 @@ async def analyser(content: list[dict]) -> str | None:
     return texte or None
 
 
-async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: list[dict], source: str = "") -> None:
-    chat_id = update.effective_chat.id
-    await context.bot.send_message(chat_id, "🔎 Je regarde l'annonce, ça prend environ une minute...")
-    await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
+async def traiter(bot, chat_id: int, content: list[dict], source: str = "") -> None:
+    """Analyse une annonce, envoie le rapport sur Telegram et l'ajoute au suivi."""
+    await bot.send_message(chat_id, "🔎 Je regarde l'annonce, ça prend environ une minute...")
+    await bot.send_chat_action(chat_id, ChatAction.TYPING)
     try:
         rapport = await analyser(content)
     except anthropic.APIError:
         log.exception("Erreur API Claude")
-        await context.bot.send_message(chat_id, "Oups, une erreur s'est produite. Réessaie dans quelques minutes.")
+        await bot.send_message(chat_id, "Oups, une erreur s'est produite. Réessaie dans quelques minutes.")
         return
     if not rapport:
-        await context.bot.send_message(
-            chat_id, "Désolé, je n'ai pas pu lire cette annonce. Essaie avec des captures d'écran."
-        )
+        await bot.send_message(chat_id, "Désolé, je n'ai pas pu lire cette annonce. Essaie avec des captures d'écran.")
         return
     # Telegram limite un message à 4096 caractères.
     for i in range(0, len(rapport), 4000):
-        await context.bot.send_message(chat_id, rapport[i : i + 4000])
+        await bot.send_message(chat_id, rapport[i : i + 4000])
 
     try:
         fiche = await enregistrer(client, source, rapport)
@@ -146,11 +145,39 @@ async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: 
         return
     if fiche:
         lien = f"\nTableau de suivi : {PAGE_SUIVI}" if PAGE_SUIVI else ""
-        await context.bot.send_message(
+        await bot.send_message(
             chat_id,
             f"📋 Ajoutée au suivi (annonce n°{fiche['id']})\n"
             f"Décision : {fiche['decision']}\n{fiche['raison']}{lien}",
         )
+
+
+async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: list[dict], source: str = "") -> None:
+    await traiter(context.bot, update.effective_chat.id, content, source)
+
+
+async def contenu_des_liens(liens: list[str]) -> tuple[list[dict], list[str]]:
+    """Ouvre chaque lien. Renvoie le contenu lisible et la liste des liens bloqués."""
+    content: list[dict] = []
+    bloques: list[str] = []
+    for url in liens:
+        try:
+            page = await lire(url)
+        except Exception:
+            log.exception("Lecture impossible : %s", url[:80])
+            bloques.append(url)
+            continue
+        if page.bloquee:
+            bloques.append(url)
+            continue
+        if page.capture:
+            content.append({
+                "type": "image",
+                "source": {"type": "base64", "media_type": "image/jpeg",
+                           "data": base64.standard_b64encode(page.capture).decode()},
+            })
+        content.append({"type": "text", "text": f"Contenu de la page {url}\n\n{page.texte}"})
+    return content, bloques
 
 
 def autorise(update: Update) -> bool:
@@ -164,6 +191,7 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "• un lien (mobile.de, autoscout24, leboncoin...)\n"
         "• ou le texte de l'annonce copié-collé\n"
         "• ou des captures d'écran (plusieurs d'un coup, c'est possible)\n\n"
+        "Si un site bloque la lecture, je mets le lien en attente (/attente pour les voir).\n\n"
         f"Je vérifie ces critères :\n{criteres}\n\n"
         f"Ton identifiant Telegram : {update.effective_user.id}"
     )
@@ -173,24 +201,42 @@ async def texte(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not autorise(update):
         return
     message = update.message.text
-    content: list[dict] = []
-    for url in trouver_liens(message)[:3]:
-        try:
-            page = await lire(url)
-        except Exception:
-            log.exception("Lecture impossible : %s", url[:80])
-            content.append({"type": "text", "text": f"La page {url} n'a pas pu être ouverte."})
-            continue
-        if page.capture:
-            content.append({
-                "type": "image",
-                "source": {"type": "base64", "media_type": "image/jpeg",
-                           "data": base64.standard_b64encode(page.capture).decode()},
-            })
-        etat = "ATTENTION : la page semble bloquée ou vide." if page.bloquee else ""
-        content.append({"type": "text", "text": f"Contenu de la page {url} {etat}\n\n{page.texte}"})
+    liens = trouver_liens(message)[:3]
+    content, bloques = await contenu_des_liens(liens)
+
+    for url in bloques:
+        nb = await attente.ajouter(update.effective_chat.id, url, message)
+    if bloques:
+        await update.message.reply_text(
+            "⏳ Ce site bloque la lecture depuis le serveur (mobile.de fait ça). "
+            f"J'ai mis le lien en attente ({nb} lien(s) en attente en tout).\n"
+            "Il sera traité dès qu'on lancera le bot depuis l'ordinateur de la maison. "
+            "Tu recevras la réponse ici. En attendant, tu peux aussi m'envoyer des captures d'écran."
+        )
+        # Rien d'autre à analyser : pas de page lue et le message n'est que le lien.
+        reste = message
+        for url in liens:
+            reste = reste.replace(url, "")
+        if not content and len(reste.strip()) < 40:
+            return
+
     content.append({"type": "text", "text": "Message envoyé :\n\n" + message})
     await repondre(update, context, content, message)
+
+
+async def voir_attente(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not autorise(update):
+        return
+    await asyncio.to_thread(suivi.synchroniser)
+    liens = attente.charger()
+    if not liens:
+        await update.message.reply_text("✅ Aucun lien en attente.")
+        return
+    lignes = "\n".join(f"{i}. {l['date']} : {l['url'][:80]}…" for i, l in enumerate(liens, 1))
+    await update.message.reply_text(
+        f"⏳ {len(liens)} lien(s) en attente :\n{lignes}\n\n"
+        "Pour les traiter, sur l'ordinateur : python traiter_attente.py"
+    )
 
 
 async def _image_block(context: ContextTypes.DEFAULT_TYPE, file_id: str, media_type: str) -> dict:
@@ -227,28 +273,12 @@ async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await repondre(update, context, content, album["legende"])
 
 
-async def traiter_en_attente(app) -> None:
-    """Mode GitHub Actions : lit les messages reçus depuis le dernier passage,
-    répond à chacun, confirme leur lecture à Telegram, puis s'arrête."""
-    async with app:
-        updates = await app.bot.get_updates(timeout=0)
-        log.info("%d message(s) en attente", len(updates))
-        if not updates:
-            return
-        # En parallèle, pour que les photos d'un même album soient regroupées.
-        await asyncio.gather(*(app.process_update(u) for u in updates), return_exceptions=True)
-        # Marque ces messages comme lus pour ne pas y répondre deux fois.
-        await app.bot.get_updates(offset=updates[-1].update_id + 1, timeout=0)
-
-
 def main() -> None:
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).concurrent_updates(True).build()
     app.add_handler(CommandHandler(["start", "aide"], start))
+    app.add_handler(CommandHandler("attente", voir_attente))
     app.add_handler(MessageHandler(filters.PHOTO | filters.Document.IMAGE, photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texte))
-    if "--once" in sys.argv:
-        asyncio.run(traiter_en_attente(app))
-        return
     log.info("Bot démarré")
     app.run_polling()
 

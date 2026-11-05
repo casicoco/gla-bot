@@ -57,6 +57,9 @@
   thead th { font-weight: 600; vertical-align: bottom; }
   td.best { background: var(--best); font-weight: 600; }
   tr.same td { color: var(--muted); }
+  .attente { background: var(--doubt-bg); color: var(--text); border-radius: 14px; padding: 12px 16px; margin-bottom: 20px; }
+  .attente b { color: var(--doubt); }
+  .attente ul { margin: 6px 0 0; word-break: break-all; font-size: .85rem; }
   .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 32px 16px; text-align: center; color: var(--muted); }
   label.toggle { font-size: .9rem; display: flex; gap: 6px; align-items: center; }
 </style>
@@ -65,6 +68,8 @@
 <div class="wrap">
   <h1>Suivi des Mercedes GLA</h1>
   <p class="sub" id="sub">Chargement…</p>
+
+  <div id="attente"></div>
 
   <div class="bar" id="filtres" role="group" aria-label="Filtrer par décision"></div>
   <div class="bar">
@@ -193,6 +198,13 @@ fetch("annonces.json?" + Date.now()).then(r => r.json()).then(data => {
     : "Les annonces envoyées au bot Telegram s'affichent ici.";
   rendre();
 }).catch(() => { document.getElementById("sub").textContent = "Impossible de charger les annonces."; });
+
+fetch("en_attente.json?" + Date.now()).then(r => r.json()).then(liens => {
+  if (!liens.length) return;
+  document.getElementById("attente").innerHTML = `<div class="attente"><b>⏳ ${liens.length} lien${liens.length > 1 ? "s" : ""} en attente</b>
+    (site bloqué depuis le serveur, à traiter depuis l'ordinateur)
+    <ul>${liens.map(l => `<li><a href="${esc(l.url)}" target="_blank" rel="noopener">${esc(l.url.slice(0, 70))}…</a> <span class="small">(${esc(l.date)})</span></li>`).join("")}</ul></div>`;
+}).catch(() => {});
 </script>
 </body>
 </html>

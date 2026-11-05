@@ -23,7 +23,7 @@ log = logging.getLogger("gla_bot")
 
 FICHIER = Path(__file__).parent / "docs" / "annonces.json"
 MODEL = "claude-opus-5-5"
-_verrou = asyncio.Lock()
+verrou = asyncio.Lock()  # une seule écriture à la fois dans les fichiers du repo
 
 
 class StatutCritere(BaseModel):
@@ -101,7 +101,15 @@ Rapport :
     return response.parsed_output
 
 
-def _pousser(message: str) -> None:
+def synchroniser() -> None:
+    """Récupère la dernière version des fichiers (l'autre bot a pu les modifier)."""
+    racine = FICHIER.parent.parent
+    if (racine / ".git").exists():
+        subprocess.run(["git", "pull", "--rebase", "--autostash", "origin", "main"],
+                       cwd=racine, capture_output=True)
+
+
+def pousser(message: str, fichiers: list[Path] | None = None) -> None:
     """Pousse docs/annonces.json sur GitHub pour mettre à jour la page de suivi."""
     racine = FICHIER.parent.parent
     if not (racine / ".git").exists():
@@ -113,9 +121,9 @@ def _pousser(message: str) -> None:
             ["git", "config", "user.email", "gla-bot@users.noreply.github.com"],
         ]
     cmds += [
-        ["git", "add", str(FICHIER)],
+        ["git", "add", *[str(f) for f in (fichiers or [FICHIER])]],
         ["git", "commit", "-m", message],
-        ["git", "pull", "--rebase", "origin", "main"],
+        ["git", "pull", "--rebase", "--autostash", "origin", "main"],
         ["git", "push", "origin", "HEAD:main"],
     ]
     for cmd in cmds:
@@ -124,7 +132,8 @@ def _pousser(message: str) -> None:
 
 async def enregistrer(client: anthropic.AsyncAnthropic, source: str, rapport: str) -> Optional[dict]:
     """Ajoute (ou met à jour) l'annonce dans la base. Renvoie la fiche, ou None si rien à enregistrer."""
-    async with _verrou:
+    async with verrou:
+        await asyncio.to_thread(synchroniser)
         annonces = charger()
         fiche = await _extraire(client, source, rapport, annonces)
         if not fiche.est_une_annonce:
@@ -143,7 +152,7 @@ async def enregistrer(client: anthropic.AsyncAnthropic, source: str, rapport: st
         FICHIER.parent.mkdir(exist_ok=True)
         FICHIER.write_text(json.dumps(annonces, ensure_ascii=False, indent=2))
         try:
-            await asyncio.to_thread(_pousser, f"Annonce #{data['id']} : {data['titre']}")
+            await asyncio.to_thread(pousser, f"Annonce #{data['id']} : {data['titre']}")
         except subprocess.CalledProcessError as e:
             log.error("Impossible de pousser la base : %s", e.stderr)
         return data
