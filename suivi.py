@@ -102,13 +102,17 @@ Rapport :
 
 
 def _pousser(message: str) -> None:
-    """Pousse docs/annonces.json sur GitHub (seulement quand le bot tourne dans GitHub Actions)."""
-    if not os.environ.get("GITHUB_ACTIONS"):
-        return
+    """Pousse docs/annonces.json sur GitHub pour mettre à jour la page de suivi."""
     racine = FICHIER.parent.parent
-    cmds = [
-        ["git", "config", "user.name", "gla-bot"],
-        ["git", "config", "user.email", "gla-bot@users.noreply.github.com"],
+    if not (racine / ".git").exists():
+        return
+    cmds = []
+    if os.environ.get("GITHUB_ACTIONS"):
+        cmds += [
+            ["git", "config", "user.name", "gla-bot"],
+            ["git", "config", "user.email", "gla-bot@users.noreply.github.com"],
+        ]
+    cmds += [
         ["git", "add", str(FICHIER)],
         ["git", "commit", "-m", message],
         ["git", "pull", "--rebase", "origin", "main"],

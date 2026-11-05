@@ -67,8 +67,13 @@ def trouver_liens(message: str) -> list[str]:
 
 async def lire(url: str) -> Page:
     async with async_playwright() as p:
+        # NAVIGATEUR=chrome : utilise le Google Chrome installé (mieux accepté par mobile.de).
+        # AFFICHER=1 : montre la fenêtre du navigateur (pratique pour voir ce qu'il fait).
+        canal = os.environ.get("NAVIGATEUR") or None
         navigateur = await p.chromium.launch(
-            executable_path=os.environ.get("CHROMIUM_PATH") or None,
+            channel=canal,
+            executable_path=None if canal else (os.environ.get("CHROMIUM_PATH") or None),
+            headless=os.environ.get("AFFICHER", "0") != "1",
             args=["--disable-blink-features=AutomationControlled"],
         )
         try:

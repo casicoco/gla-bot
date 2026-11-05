@@ -21,6 +21,16 @@ from telegram.ext import (
     filters,
 )
 
+from pathlib import Path
+
+# Charge les clés depuis le fichier .env s'il existe (utile sur ton ordinateur).
+_env = Path(__file__).parent / ".env"
+if _env.exists():
+    for _ligne in _env.read_text().splitlines():
+        if "=" in _ligne and not _ligne.lstrip().startswith("#"):
+            _cle, _val = _ligne.split("=", 1)
+            os.environ.setdefault(_cle.strip(), _val.strip())
+
 from criteres import CRITERES, MODELE
 from lecteur import lire, trouver_liens
 from suivi import enregistrer

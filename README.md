@@ -2,55 +2,43 @@
 
 On envoie au bot une annonce (lien, texte copié ou captures d'écran) et il répond
 critère par critère : ✅ présent, ❌ absent, ❓ doute (avec la question à poser au vendeur).
+Chaque annonce est ajoutée à la page de suivi : https://casicoco.github.io/gla-bot/
 
-Les critères sont dans `criteres.py` (faciles à modifier).
+- `criteres.py` : la liste des critères (facile à modifier)
+- `lecteur.py` : ouvre la page dans Chrome, accepte les cookies, déplie les « voir plus »
+- `suivi.py` : enregistre chaque annonce dans `docs/annonces.json` (la page de suivi)
 
-## Mise en place
+## Pourquoi le bot tourne à la maison
 
-1. **Créer le bot Telegram** : dans Telegram, écrire à `@BotFather`, envoyer `/newbot`,
-   choisir un nom. BotFather donne un *token*.
-2. **Clé Claude** : créer une clé sur https://platform.claude.com (section API keys).
-3. **Installer et lancer** :
+mobile.de bloque les serveurs (GitHub, hébergeurs…) mais accepte les connexions
+de particuliers. Le bot tourne donc sur un ordinateur à la maison, qui doit rester allumé.
 
-```bash
-
-python -m venv .venv && source .venv/bin/activate
-pip install -r requirements.txt
-cp .env.example .env   # puis remplir les valeurs
-set -a && source .env && set +a
-python bot.py
-```
-
-4. Dans Telegram, ouvrir le bot et envoyer `/start` : il affiche l'identifiant Telegram.
-   Mettre l'identifiant de maman (et le tien) dans `ALLOWED_CHAT_IDS`, puis relancer.
-   Comme ça, personne d'autre ne peut utiliser le bot (et consommer la clé API).
-
-## Hébergement : GitHub Actions
-
-Le bot tourne en continu sur GitHub Actions (`.github/workflows/bot.yml`), gratuitement
-car le repo est public. Il répond en environ une minute. GitHub coupe un job au bout
-de 6 heures : le bot s'arrête donc tout seul toutes les ~5 h 45 et un nouveau lancement
-prend le relais (quelques minutes de coupure au maximum, aucun message perdu).
-
-Enregistrer les clés en secrets du repo :
+## Installation (une seule fois, Mac ou Linux)
 
 ```bash
-gh secret set TELEGRAM_BOT_TOKEN --repo casicoco/gla-bot
-gh secret set ANTHROPIC_API_KEY --repo casicoco/gla-bot
-gh secret set ALLOWED_CHAT_IDS --repo casicoco/gla-bot --body "<id1>,<id2>"
+gh repo clone casicoco/gla-bot ~/gla-bot
+cd ~/gla-bot
+python3 -m venv .venv
+.venv/bin/pip install -r requirements.txt
+.venv/bin/python -m playwright install chromium
+cp .env.example .env
 ```
 
-Relancer le bot à la main (s'il ne répond plus) :
+Puis remplir `.env` (token Telegram, clé Claude, identifiants autorisés).
+Sur Windows, remplacer `.venv/bin/` par `.venv\Scripts\`.
+
+## Lancer le bot
 
 ```bash
-gh workflow run bot.yml --repo casicoco/gla-bot
+cd ~/gla-bot && git pull && .venv/bin/python bot.py
 ```
 
-Bon à savoir : GitHub met en pause les tâches planifiées d'un repo sans aucun commit
-pendant 60 jours. Il suffit alors de la réactiver avec
-`gh workflow enable bot.yml --repo casicoco/gla-bot`.
+Laisser la fenêtre ouverte. Pour arrêter : Ctrl+C.
+
+Ne pas lancer en même temps le workflow GitHub `bot.yml` (secours) : Telegram refuse deux
+bots actifs en même temps.
 
 ## Astuce
 
-Certains sites (mobile.de notamment) bloquent parfois la lecture automatique des pages.
-Dans ce cas le bot le dit : il suffit d'envoyer des captures d'écran de la liste d'équipements.
+Si un site bloque quand même la lecture, le bot le dit : il suffit d'envoyer des captures
+d'écran de l'annonce ou de copier-coller son texte.
