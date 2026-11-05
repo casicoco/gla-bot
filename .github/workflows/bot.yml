@@ -1,0 +1,27 @@
+name: Bot GLA
+
+on:
+  schedule:
+    - cron: "*/30 * * * *" # toutes les 30 minutes (reste dans le quota gratuit d'un repo privé)
+  workflow_dispatch: # bouton "Run workflow" pour lancer à la main
+
+concurrency:
+  group: bot-gla
+  cancel-in-progress: false
+
+jobs:
+  repondre:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - run: python bot.py --once
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ALLOWED_CHAT_IDS: ${{ secrets.ALLOWED_CHAT_IDS }}

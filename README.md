@@ -25,11 +25,30 @@ python bot.py
    Mettre l'identifiant de maman (et le tien) dans `ALLOWED_CHAT_IDS`, puis relancer.
    Comme ça, personne d'autre ne peut utiliser le bot (et consommer la clé API).
 
-## Le faire tourner en permanence
+## Hébergement : GitHub Actions
 
-Le bot doit tourner en continu pour répondre. Options : un ordinateur toujours allumé,
-un Raspberry Pi, ou un hébergeur (Railway, Render, Fly.io...) avec la commande `python bot.py`
-et les 3 variables d'environnement.
+Le bot n'a pas besoin de serveur : GitHub le lance toutes les 30 minutes
+(`.github/workflows/bot.yml`). À chaque passage, il répond aux annonces reçues
+depuis le passage précédent, puis s'arrête. La réponse peut donc mettre jusqu'à
+30 minutes (parfois un peu plus, GitHub prend souvent du retard).
+
+Enregistrer les clés en secrets du repo :
+
+```bash
+gh secret set TELEGRAM_BOT_TOKEN --repo casicoco/gla-bot
+gh secret set ANTHROPIC_API_KEY --repo casicoco/gla-bot
+gh secret set ALLOWED_CHAT_IDS --repo casicoco/gla-bot --body "<id1>,<id2>"
+```
+
+Lancer un passage tout de suite, sans attendre :
+
+```bash
+gh workflow run bot.yml --repo casicoco/gla-bot
+```
+
+Bon à savoir : GitHub met en pause les tâches planifiées d'un repo sans aucun commit
+pendant 60 jours. Il suffit alors de la réactiver avec
+`gh workflow enable bot.yml --repo casicoco/gla-bot`.
 
 ## Astuce
 

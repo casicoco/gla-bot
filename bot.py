@@ -8,6 +8,7 @@ import asyncio
 import base64
 import logging
 import os
+import sys
 
 import anthropic
 from telegram import Update
@@ -173,11 +174,28 @@ async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await repondre(update, context, content)
 
 
+async def traiter_en_attente(app) -> None:
+    """Mode GitHub Actions : lit les messages reçus depuis le dernier passage,
+    répond à chacun, confirme leur lecture à Telegram, puis s'arrête."""
+    async with app:
+        updates = await app.bot.get_updates(timeout=0)
+        log.info("%d message(s) en attente", len(updates))
+        if not updates:
+            return
+        # En parallèle, pour que les photos d'un même album soient regroupées.
+        await asyncio.gather(*(app.process_update(u) for u in updates), return_exceptions=True)
+        # Marque ces messages comme lus pour ne pas y répondre deux fois.
+        await app.bot.get_updates(offset=updates[-1].update_id + 1, timeout=0)
+
+
 def main() -> None:
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).concurrent_updates(True).build()
     app.add_handler(CommandHandler(["start", "aide"], start))
     app.add_handler(MessageHandler(filters.PHOTO | filters.Document.IMAGE, photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texte))
+    if "--once" in sys.argv:
+        asyncio.run(traiter_en_attente(app))
+        return
     log.info("Bot démarré")
     app.run_polling()
 
