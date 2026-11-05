@@ -103,7 +103,7 @@
       "Est-il possible d'avoir des pneus 4 saisons à la place des pneus été, ou un jeu de pneus en plus ?"
     ],
     "decision": "À contacter",
-    "raison": "Cette annonce semble être la même voiture que l'annonce #1 déjà suivie (même modèle, année, 10 215 km, 37 470 €, 11/15 critères). C'est une bonne candidate presque neuve et bien équipée, donc la décision « À contacter » reste valable. Il faut vérifier s'il s'agit d'un doublon et éviter de la suivre deux fois.",
+    "raison": "Presque neuve (2025, 10 215 km), blanche et bien équipée avec 11 critères confirmés, au prix le plus bas des annonces blanches suivies. C'est la meilleure candidate pour l'instant.",
     "date": "2026-11-05",
     "id": 1
   },
@@ -322,5 +322,221 @@
     "raison": "Même modèle, même année et exactement le même kilométrage (14 683 km) que l'annonce #2 : c'est très probablement la même voiture, ici 2 000 € plus chère. L'annonce #1 offre aussi 11 critères confirmés pour environ 4 500 € de moins, et le Pack Nuit manque ici.",
     "date": "2026-11-05",
     "id": 3
+  },
+  {
+    "titre": "Mercedes-Benz GLA 200 AMG Line",
+    "annee": 2025,
+    "kilometrage": 6150,
+    "prix": 37900,
+    "vendeur": "Autohaus Lange, Wismar, Allemagne",
+    "url": "https://www.auto-lange.de/fahrzeuge/mercedes-benz-gla-200-amg-linenight-paket360-kamera/",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "Polarweiß"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "doute",
+        "detail": "aucune mention"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "oui",
+        "detail": "Night-Paket"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "doute",
+        "detail": "non mentionnés"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "oui",
+        "detail": "Ausstattungs-Paket: Premium"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "oui",
+        "detail": "Park-Paket mit 360° Kamera"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "doute",
+        "detail": "absent de la liste"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": "Induktionsladeschale"
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "doute",
+        "detail": "seulement MBUX, Smartphone-Integration pas écrit"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "oui",
+        "detail": "Lenkrad heizbar"
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": "Sitzheizung vorn"
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "doute",
+        "detail": "absente de la liste"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "seulement un kit anti-crevaison"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "doute",
+        "detail": "non mentionné"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "doute",
+        "detail": "seuls les supports lombaires semblent électriques"
+      }
+    ],
+    "points_forts": [
+      "Blanche (Polarweiß)",
+      "Presque neuve : 10/2025, 6 150 km",
+      "Pack Premium et Pack Nuit",
+      "Caméra 360°, induction, volant et sièges chauffants",
+      "Prix dans le budget"
+    ],
+    "points_faibles": [
+      "Pas de toit panoramique ni d'attelage dans la liste",
+      "Pas de mention Junge Sterne",
+      "Multibeam et Apple CarPlay non confirmés"
+    ],
+    "questions_vendeur": [
+      "La voiture a-t-elle le label Junge Sterne ?",
+      "A-t-elle les phares MULTIBEAM LED, le toit panoramique, une boule de remorquage et le hayon électrique (EASY-PACK) ?",
+      "Apple CarPlay est-il activé ?",
+      "Les sièges sont-ils à réglage électrique ou seulement les lombaires ?",
+      "Quels pneus sont montés ?"
+    ],
+    "decision": "À étudier",
+    "raison": "Elle est blanche, presque neuve et au même prix que la n°1, avec le Pack Premium et la caméra 360°. Mais le toit panoramique et l'attelage manquent dans la liste et beaucoup de points restent à confirmer : à appeler seulement si le vendeur confirme ces équipements.",
+    "date": "2026-11-05",
+    "id": 4
+  },
+  {
+    "titre": "Mercedes-Benz GLA 200 AMG Line (véhicule de démonstration)",
+    "annee": 2026,
+    "kilometrage": 5000,
+    "prix": 40890,
+    "vendeur": "Autohaus Arnold, Parsberg-Lupburg, Allemagne",
+    "url": "https://www.autohaus-arnold.de/fahrzeuge/fahrzeugdetail/fahrzeug/MzE4MTQ6MDM1OUcyNjExNA",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "non",
+        "detail": "Silber (argent)"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "oui",
+        "detail": "Junge Sterne"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "oui",
+        "detail": "P55 Night-Paket"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "oui",
+        "detail": "642 Multibeam LED"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "doute",
+        "detail": "pas listé, AMG Line Advanced Plus à la place"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "oui",
+        "detail": "P47 Park-Paket mit 360 Grad-Kamera"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "oui",
+        "detail": "413 Panorama-Schiebedach"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": "897 Kabelloses Ladesystem"
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": "16U Apple CarPlay"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "oui",
+        "detail": "443 Lenkradheizung"
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": "873 Sitzheizung"
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "doute",
+        "detail": "liste du vendeur coupée"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "non mentionnés"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": "890 Easy-Pack Heckklappe"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "doute",
+        "detail": "seulement Sitzkomfort-Paket et sièges sport"
+      }
+    ],
+    "points_forts": [
+      "Très équipée : 10 critères confirmés",
+      "Junge Sterne",
+      "Multibeam, toit panoramique, hayon électrique",
+      "5 000 km"
+    ],
+    "points_faibles": [
+      "Couleur argent, pas blanche",
+      "Au-dessus de 40 000 €",
+      "Véhicule de démonstration",
+      "Liste d'équipements coupée sur le site"
+    ],
+    "questions_vendeur": [
+      "Pouvez-vous envoyer la liste complète des équipements ?",
+      "A-t-elle une boule de remorquage ?",
+      "Les sièges avant sont-ils à réglage électrique ?",
+      "Quels pneus sont montés ?",
+      "Le pack AMG Line Advanced Plus inclut-il le pack Premium ?"
+    ],
+    "decision": "À écarter",
+    "raison": "C'est la mieux équipée de toutes (Junge Sterne, Multibeam, toit panoramique, hayon électrique), mais elle est argent alors que le blanc est indispensable, et elle coûte environ 3 400 € de plus que la n°1.",
+    "date": "2026-11-05",
+    "id": 5
   }
 ]
