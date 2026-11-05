@@ -65,45 +65,55 @@ def trouver_liens(message: str) -> list[str]:
     return [u.rstrip(").,;!?»\"'") for u in URL_RE.findall(message or "")]
 
 
+async def _ouvrir(p, url: str):
+    """Ouvre la page comme une personne : accepte les cookies et fait défiler. Renvoie (navigateur, page)."""
+    # NAVIGATEUR=chrome : utilise le Google Chrome installé (mieux accepté par mobile.de).
+    # AFFICHER=1 : montre la fenêtre du navigateur (pratique pour voir ce qu'il fait).
+    canal = os.environ.get("NAVIGATEUR") or None
+    navigateur = await p.chromium.launch(
+        channel=canal,
+        executable_path=None if canal else (os.environ.get("CHROMIUM_PATH") or None),
+        headless=os.environ.get("AFFICHER", "0") != "1",
+        args=["--disable-blink-features=AutomationControlled"],
+    )
+    try:
+        contexte = await navigateur.new_context(
+            locale="fr-FR",
+            viewport={"width": 1280, "height": 1600},
+            user_agent=(
+                "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+                "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
+            ),
+        )
+        page = await contexte.new_page()
+        await page.goto(url, wait_until="domcontentloaded", timeout=45_000)
+        await page.wait_for_timeout(3000)
+
+        # Bandeau cookies (parfois dans une iframe).
+        for cadre in page.frames:
+            try:
+                bouton = cadre.get_by_role("button", name=re.compile(COOKIES_RE, re.I)).first
+                if await bouton.is_visible(timeout=500):
+                    await bouton.click(timeout=2000)
+                    await page.wait_for_timeout(1500)
+                    break
+            except Exception:
+                pass
+
+        # Faire défiler pour charger les sections paresseuses.
+        for _ in range(6):
+            await page.mouse.wheel(0, 2500)
+            await page.wait_for_timeout(400)
+        return navigateur, page
+    except Exception:
+        await navigateur.close()
+        raise
+
+
 async def lire(url: str) -> Page:
     async with async_playwright() as p:
-        # NAVIGATEUR=chrome : utilise le Google Chrome installé (mieux accepté par mobile.de).
-        # AFFICHER=1 : montre la fenêtre du navigateur (pratique pour voir ce qu'il fait).
-        canal = os.environ.get("NAVIGATEUR") or None
-        navigateur = await p.chromium.launch(
-            channel=canal,
-            executable_path=None if canal else (os.environ.get("CHROMIUM_PATH") or None),
-            headless=os.environ.get("AFFICHER", "0") != "1",
-            args=["--disable-blink-features=AutomationControlled"],
-        )
+        navigateur, page = await _ouvrir(p, url)
         try:
-            contexte = await navigateur.new_context(
-                locale="fr-FR",
-                viewport={"width": 1280, "height": 1600},
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
-                    "(KHTML, like Gecko) Chrome/130.0.0.0 Safari/537.36"
-                ),
-            )
-            page = await contexte.new_page()
-            await page.goto(url, wait_until="domcontentloaded", timeout=45_000)
-            await page.wait_for_timeout(3000)
-
-            # Bandeau cookies (parfois dans une iframe).
-            for cadre in page.frames:
-                try:
-                    bouton = cadre.get_by_role("button", name=re.compile(COOKIES_RE, re.I)).first
-                    if await bouton.is_visible(timeout=500):
-                        await bouton.click(timeout=2000)
-                        await page.wait_for_timeout(1500)
-                        break
-                except Exception:
-                    pass
-
-            # Faire défiler pour charger les sections paresseuses, puis déplier.
-            for _ in range(6):
-                await page.mouse.wheel(0, 2500)
-                await page.wait_for_timeout(400)
             total = 0
             for _ in range(4):
                 n = await page.evaluate(JS_DEPLIER)
@@ -118,5 +128,38 @@ async def lire(url: str) -> Page:
             capture = await page.screenshot(type="jpeg", quality=70)
             bloquee = len(texte) < 800 or bool(BLOQUE_RE.search(texte[:3000]))
             return Page(url=page.url, texte=texte, capture=capture, bloquee=bloquee)
+        finally:
+            await navigateur.close()
+
+
+# Forme des liens vers une annonce, selon le site.
+ANNONCE_RE = re.compile(
+    r"mobile\.de/.*(details\.html\?.*\bid=\d+|d%C3%A9tails\.html\?.*\bid=\d+|détails\.html\?.*\bid=\d+)"
+    r"|autoscout24\.[a-z.]+/(angebote|offres|annunci|ofertas)/"
+    r"|leboncoin\.fr/(ad/)?voitures/\d+"
+    r"|lacentrale\.fr/auto-occasion-annonce-"
+    r"|importemoi\.fr/vehicule/",
+    re.I,
+)
+
+
+async def liens_annonces(url_recherche: str) -> tuple[list[str], bool]:
+    """Ouvre une page de résultats et renvoie (liens des annonces trouvées, page bloquée ?)."""
+    async with async_playwright() as p:
+        navigateur, page = await _ouvrir(p, url_recherche)
+        try:
+            texte = await page.inner_text("body")
+            if len(texte) < 800 or BLOQUE_RE.search(texte[:3000]):
+                return [], True
+            hrefs = await page.evaluate("() => [...document.querySelectorAll('a[href]')].map(a => a.href)")
+            vus, liens = set(), []
+            for h in hrefs:
+                if ANNONCE_RE.search(h):
+                    cle = h.split("#")[0]
+                    if cle not in vus:
+                        vus.add(cle)
+                        liens.append(cle)
+            log.info("%d annonces trouvées sur %s", len(liens), url_recherche[:80])
+            return liens, False
         finally:
             await navigateur.close()

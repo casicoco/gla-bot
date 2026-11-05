@@ -1,0 +1,8 @@
+# Recherches à surveiller : une adresse de page de résultats par ligne.
+# Le plus simple : faire la recherche dans ton navigateur (mobile.de, AutoScout24...),
+# régler les filtres, puis copier l'adresse de la page de résultats ici.
+# Les lignes qui commencent par # sont ignorées.
+
+# mobile.de : ta recherche (Mercedes GLA AMG, 2024-2025, essence, automatique, pro,
+# 40 000 € max, toit panoramique, caméra 360°, attelage fixe...)
+https://suchen.mobile.de/fahrzeuge/search.html?vc=Car&blt=ADAPTIVE_BENDING_LIGHTS&cn=DE&dam=false&fe=PANORAMIC_GLASS_ROOF&fe=KEYLESS_ENTRY&fr=2024%3A2025&ft=PETROL&ms=17200%3B%3B54%3BAMG&p=%3A40000&pa=CAM_360_DEGREES&pa=AUTOMATIC_PARKING&spc=CRUISE_CONTROL&st=DEALER&tct=TRAILER_COUPLING_FIX&tr=AUTOMATIC_GEAR&sb=p&od=up&s=Car&isSearchRequest=true

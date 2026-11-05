@@ -32,3 +32,19 @@ Ne jamais lancer `pip install` ou `python` du système : l'ordinateur a d'autres
 
 Ne pas lancer `bot.py` sur l'ordinateur : le bot tourne déjà sur GitHub, et Telegram refuse deux
 bots actifs en même temps. `traiter_attente.py` ne pose pas ce problème.
+
+# Recherche de nouvelles annonces (« cherche de nouvelles annonces »)
+
+Depuis l'ordinateur de la maison seulement (mobile.de bloque les serveurs). Mêmes règles :
+toujours `.venv/bin/python`, jamais le Python du système.
+
+- Lancer : `git pull && .venv/bin/python rechercher.py` (10 nouvelles annonces au maximum ;
+  `--max 20` pour plus). Chaque annonce coûte un appel à Claude : ne pas dépasser `--max 20`
+  sans l'accord de l'utilisateur.
+- Les recherches surveillées sont dans `recherches.txt` (une adresse de page de résultats par
+  ligne). Si l'utilisateur donne une nouvelle recherche (« ajoute cette recherche : <lien> »),
+  l'ajouter à ce fichier, puis `git add recherches.txt && git commit -m "Nouvelle recherche" && git push`.
+- Si une page de recherche est « bloquée », relancer avec `AFFICHER=1` devant la commande pour
+  voir la fenêtre de Chrome : il y a parfois un bandeau ou un captcha à passer à la main.
+- Résumer en deux ou trois phrases : combien d'annonces trouvées, combien ajoutées et la
+  meilleure. Le récapitulatif détaillé part tout seul sur Telegram.

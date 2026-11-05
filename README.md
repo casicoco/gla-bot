@@ -38,6 +38,18 @@ cd ~/gla-bot && git pull && .venv/bin/python traiter_attente.py
 Le script s'arrête tout seul quand tous les liens sont traités. Le bot sur GitHub peut
 continuer à tourner pendant ce temps.
 
+## Chercher de nouvelles annonces (ordinateur de la maison)
+
+`recherches.txt` contient les pages de résultats à surveiller (mobile.de, AutoScout24…).
+La commande ouvre chaque recherche, analyse les annonces pas encore suivies (10 au maximum),
+les ajoute au tableau de suivi et envoie un récapitulatif sur Telegram :
+
+```bash
+cd ~/gla-bot && git pull && .venv/bin/python rechercher.py
+```
+
+Ou, dans une session Claude sur l'ordinateur : « cherche de nouvelles annonces ».
+
 ## Astuce
 
 Si un site bloque même depuis la maison, le lien reste en attente : il suffit alors

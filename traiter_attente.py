@@ -33,8 +33,8 @@ async def main() -> None:
             print(f"\n→ {lien['url'][:100]}")
             if lien.get("rapport"):
                 # Analyse déjà envoyée sur Telegram, seul l'ajout au suivi avait échoué.
-                ok = await enregistrer_et_annoncer(bot, lien["chat_id"], lien["message"], lien["rapport"])
-                resultat = {"rapport": lien["rapport"], "enregistre": ok}
+                fiche = await enregistrer_et_annoncer(bot, lien["chat_id"], lien["message"], lien["rapport"])
+                resultat = {"rapport": lien["rapport"], "enregistre": fiche is not False}
             else:
                 content, bloques = await contenu_des_liens([lien["url"]])
                 if bloques:
