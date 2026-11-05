@@ -214,5 +214,113 @@
     "raison": "Elle coche 12 critères sur 15, un de plus que l'annonce #1, mais elle coûte environ 2 500 € de plus avec plus de kilomètres et un moteur 180 moins puissant. Le label Junge Sterne reste à confirmer et le Pack Nuit manque. Le prix est à discuter, et le GLA 180 Special Edition du même vendeur avec Pack Nuit mérite aussi d'être regardé.",
     "date": "2026-11-05",
     "id": 2
+  },
+  {
+    "titre": "Mercedes-Benz GLA 180 AMG",
+    "annee": 2025,
+    "kilometrage": 14683,
+    "prix": 41970,
+    "vendeur": "Concession Mercedes LUEG, Essen (Allemagne)",
+    "url": "https://importemoi.fr/vehicule/mercedes-benz-gla-180-amg-pano-mbeam-sound-key-ahk-hud-mem-360-7299126",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "« Blanc », confirmé par les photos"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "doute",
+        "detail": "Plaque et bandeau sur les photos, pas écrit dans le texte"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "non",
+        "detail": "Absent de la liste et du titre"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "oui",
+        "detail": "« MBeam » dans le titre"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "doute",
+        "detail": "Nom du pack absent, plusieurs équipements présents"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "oui",
+        "detail": "Caméra 360°, radars AV/AR, stationnement automatique"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "oui",
+        "detail": "« Pano » dans le titre"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": "Et Android Auto"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "oui",
+        "detail": "« AHK » et « Attache remorque »"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "Type de pneus non indiqué"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "oui",
+        "detail": "Avec mémoire"
+      }
+    ],
+    "points_forts": [
+      "Blanc confirmé",
+      "Phares MULTIBEAM, toit panoramique, caméra 360°, attelage",
+      "Sièges électriques à mémoire, volant et sièges chauffants",
+      "Vendu par une concession Mercedes, transport et importation compris"
+    ],
+    "points_faibles": [
+      "Pack Nuit absent",
+      "Pack Premium et label Junge Sterne non confirmés",
+      "Prix le plus élevé des annonces suivies",
+      "Description d'origine en allemand non lue"
+    ],
+    "questions_vendeur": [
+      "La voiture a-t-elle bien le label Junge Sterne, avec la garantie Junge Sterne ?",
+      "Le Pack Nuit (Night-Paket) est-il installé ?",
+      "Le Pack Premium (Premium-Paket) est-il installé ?",
+      "Quels pneus sont montés : été, hiver ou 4 saisons (Ganzjahresreifen) ?",
+      "Pouvez-vous envoyer la description d'origine ou la liste officielle des options (codes Mercedes) ?"
+    ],
+    "decision": "À écarter",
+    "raison": "Même modèle, même année et exactement le même kilométrage (14 683 km) que l'annonce #2 : c'est très probablement la même voiture, ici 2 000 € plus chère. L'annonce #1 offre aussi 11 critères confirmés pour environ 4 500 € de moins, et le Pack Nuit manque ici.",
+    "date": "2026-11-05",
+    "id": 3
   }
 ]
