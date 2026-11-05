@@ -27,10 +27,10 @@ python bot.py
 
 ## Hébergement : GitHub Actions
 
-Le bot n'a pas besoin de serveur : GitHub le lance toutes les 30 minutes
-(`.github/workflows/bot.yml`). À chaque passage, il répond aux annonces reçues
-depuis le passage précédent, puis s'arrête. La réponse peut donc mettre jusqu'à
-30 minutes (parfois un peu plus, GitHub prend souvent du retard).
+Le bot tourne en continu sur GitHub Actions (`.github/workflows/bot.yml`), gratuitement
+car le repo est public. Il répond en environ une minute. GitHub coupe un job au bout
+de 6 heures : le bot s'arrête donc tout seul toutes les ~5 h 45 et un nouveau lancement
+prend le relais (quelques minutes de coupure au maximum, aucun message perdu).
 
 Enregistrer les clés en secrets du repo :
 
@@ -40,7 +40,7 @@ gh secret set ANTHROPIC_API_KEY --repo casicoco/gla-bot
 gh secret set ALLOWED_CHAT_IDS --repo casicoco/gla-bot --body "<id1>,<id2>"
 ```
 
-Lancer un passage tout de suite, sans attendre :
+Relancer le bot à la main (s'il ne répond plus) :
 
 ```bash
 gh workflow run bot.yml --repo casicoco/gla-bot

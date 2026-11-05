@@ -1,18 +1,21 @@
 name: Bot GLA
 
+# Le bot reste allumé environ 5 h 45 (GitHub coupe tout job à 6 h).
+# Un lancement est programmé toutes les 15 minutes : tant que le bot tourne,
+# il attend son tour, puis prend le relais dès que le précédent s'arrête.
 on:
   schedule:
-    - cron: "*/30 * * * *" # toutes les 30 minutes (reste dans le quota gratuit d'un repo privé)
-  workflow_dispatch: # bouton "Run workflow" pour lancer à la main
+    - cron: "*/15 * * * *"
+  workflow_dispatch: # pour lancer à la main : gh workflow run bot.yml
 
 concurrency:
   group: bot-gla
   cancel-in-progress: false
 
 jobs:
-  repondre:
+  bot:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 355
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -20,7 +23,9 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
-      - run: python bot.py --once
+      - name: Bot allumé
+        # Arrêt propre après 345 minutes ; le lancement suivant prend le relais.
+        run: timeout --signal=INT 345m python bot.py || [ $? -eq 124 ]
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
