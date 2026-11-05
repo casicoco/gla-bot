@@ -22,6 +22,8 @@ from telegram.ext import (
 )
 
 from criteres import CRITERES, MODELE
+from lecteur import lire, trouver_liens
+from suivi import enregistrer
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
 log = logging.getLogger("gla_bot")
@@ -32,6 +34,8 @@ TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 ALLOWED_IDS = {int(x) for x in os.environ.get("ALLOWED_CHAT_IDS", "").replace(" ", "").split(",") if x}
 
 MODEL = "claude-opus-5-5"
+_depot = os.environ.get("GITHUB_REPOSITORY", "")
+PAGE_SUIVI = f"https://{_depot.split('/')[0]}.github.io/{_depot.split('/')[1]}/" if "/" in _depot else ""
 client = anthropic.AsyncAnthropic()
 
 liste_criteres = "\n".join(
@@ -46,8 +50,10 @@ Critères :
 {liste_criteres}
 
 Méthode :
-- Si un lien est fourni, lis la page avec l'outil web_fetch. Si la page est inaccessible ou vide,
-  dis-le clairement et demande des captures d'écran de la liste d'équipements.
+- Quand un lien est envoyé, le contenu complet de la page t'est fourni (lu avec un navigateur,
+  tous les « voir plus » déjà dépliés) avec une capture du haut de la page. Utilise-le en priorité.
+- Si la page n'a pas pu être lue (site bloqué), essaie l'outil web_fetch. Si ça ne marche pas
+  non plus, dis-le clairement et demande des captures d'écran de la liste d'équipements.
 - Lis toute la liste d'équipements. Les annonces allemandes utilisent les noms allemands.
 - ✅ = l'annonce le mentionne clairement.
 - ❌ = absent de l'annonce alors que la liste d'équipements semble complète, ou clairement contredit
@@ -78,8 +84,8 @@ TOOLS = [{"type": "web_fetch_20260209", "name": "web_fetch", "max_uses": 5}]
 _albums: dict[str, dict] = {}
 
 
-async def analyser(content: list[dict]) -> str:
-    """Envoie l'annonce à Claude et renvoie le texte de la réponse."""
+async def analyser(content: list[dict]) -> str | None:
+    """Envoie l'annonce à Claude et renvoie le texte de la réponse (None si échec)."""
     messages = [{"role": "user", "content": content}]
     for _ in range(5):  # boucle seulement si l'API met le tour en pause (outil web)
         async with client.beta.messages.stream(
@@ -99,23 +105,42 @@ async def analyser(content: list[dict]) -> str:
         break
 
     if response.stop_reason == "refusal":
-        return "Désolé, je n'ai pas pu analyser cette annonce. Essaie avec des captures d'écran."
+        return None
     texte = "\n".join(b.text for b in response.content if b.type == "text").strip()
-    return texte or "Je n'ai rien pu lire dans cette annonce. Essaie avec des captures d'écran."
+    return texte or None
 
 
-async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: list[dict]) -> None:
+async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: list[dict], source: str = "") -> None:
     chat_id = update.effective_chat.id
     await context.bot.send_message(chat_id, "🔎 Je regarde l'annonce, ça prend environ une minute...")
     await context.bot.send_chat_action(chat_id, ChatAction.TYPING)
     try:
-        texte = await analyser(content)
+        rapport = await analyser(content)
     except anthropic.APIError:
         log.exception("Erreur API Claude")
-        texte = "Oups, une erreur s'est produite. Réessaie dans quelques minutes."
+        await context.bot.send_message(chat_id, "Oups, une erreur s'est produite. Réessaie dans quelques minutes.")
+        return
+    if not rapport:
+        await context.bot.send_message(
+            chat_id, "Désolé, je n'ai pas pu lire cette annonce. Essaie avec des captures d'écran."
+        )
+        return
     # Telegram limite un message à 4096 caractères.
-    for i in range(0, len(texte), 4000):
-        await context.bot.send_message(chat_id, texte[i : i + 4000])
+    for i in range(0, len(rapport), 4000):
+        await context.bot.send_message(chat_id, rapport[i : i + 4000])
+
+    try:
+        fiche = await enregistrer(client, source, rapport)
+    except Exception:
+        log.exception("Erreur lors de l'enregistrement dans le suivi")
+        return
+    if fiche:
+        lien = f"\nTableau de suivi : {PAGE_SUIVI}" if PAGE_SUIVI else ""
+        await context.bot.send_message(
+            chat_id,
+            f"📋 Ajoutée au suivi (annonce n°{fiche['id']})\n"
+            f"Décision : {fiche['decision']}\n{fiche['raison']}{lien}",
+        )
 
 
 def autorise(update: Update) -> bool:
@@ -137,7 +162,25 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
 async def texte(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not autorise(update):
         return
-    await repondre(update, context, [{"type": "text", "text": "Voici l'annonce :\n\n" + update.message.text}])
+    message = update.message.text
+    content: list[dict] = []
+    for url in trouver_liens(message)[:3]:
+        try:
+            page = await lire(url)
+        except Exception:
+            log.exception("Lecture impossible : %s", url[:80])
+            content.append({"type": "text", "text": f"La page {url} n'a pas pu être ouverte."})
+            continue
+        if page.capture:
+            content.append({
+                "type": "image",
+                "source": {"type": "base64", "media_type": "image/jpeg",
+                           "data": base64.standard_b64encode(page.capture).decode()},
+            })
+        etat = "ATTENTION : la page semble bloquée ou vide." if page.bloquee else ""
+        content.append({"type": "text", "text": f"Contenu de la page {url} {etat}\n\n{page.texte}"})
+    content.append({"type": "text", "text": "Message envoyé :\n\n" + message})
+    await repondre(update, context, content, message)
 
 
 async def _image_block(context: ContextTypes.DEFAULT_TYPE, file_id: str, media_type: str) -> dict:
@@ -160,7 +203,7 @@ async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     legende = msg.caption or ""
 
     if not msg.media_group_id:
-        await repondre(update, context, [bloc, {"type": "text", "text": "Captures de l'annonce. " + legende}])
+        await repondre(update, context, [bloc, {"type": "text", "text": "Captures de l'annonce. " + legende}], legende)
         return
 
     # Album : on attend que toutes les photos arrivent, puis on analyse une seule fois.
@@ -171,7 +214,7 @@ async def photo(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         await asyncio.sleep(3)
         album = _albums.pop(msg.media_group_id)
         content = album["blocs"] + [{"type": "text", "text": "Captures de l'annonce. " + album["legende"]}]
-        await repondre(update, context, content)
+        await repondre(update, context, content, album["legende"])
 
 
 async def traiter_en_attente(app) -> None:

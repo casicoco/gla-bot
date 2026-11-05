@@ -1,0 +1,30 @@
+name: Test lecture d'une page
+
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Lien de l'annonce"
+        required: true
+
+jobs:
+  lire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt && python -m playwright install --with-deps chromium
+      - name: Lire la page
+        env:
+          URL: ${{ inputs.url }}
+        run: |
+          python - <<'PY'
+          import asyncio, logging, os, lecteur
+          logging.basicConfig(level=logging.INFO)
+          p = asyncio.run(lecteur.lire(os.environ["URL"]))
+          print("BLOQUEE:", p.bloquee, "| LONGUEUR:", len(p.texte))
+          print(p.texte[:4000])
+          PY

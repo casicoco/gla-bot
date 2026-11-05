@@ -8,6 +8,9 @@ on:
     - cron: "*/15 * * * *"
   workflow_dispatch: # pour lancer à la main : gh workflow run bot.yml
 
+permissions:
+  contents: write # le bot enregistre les annonces dans docs/annonces.json
+
 concurrency:
   group: bot-gla
   cancel-in-progress: false
@@ -23,6 +26,7 @@ jobs:
           python-version: "3.12"
           cache: pip
       - run: pip install -r requirements.txt
+      - run: python -m playwright install --with-deps chromium
       - name: Bot allumé
         # Arrêt propre après 345 minutes ; le lancement suivant prend le relais.
         run: timeout --signal=INT 345m python bot.py || [ $? -eq 124 ]

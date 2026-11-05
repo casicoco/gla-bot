@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Suivi GLA</title>
+<style>
+  :root {
+    --bg: #f6f5f2; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e2dd;
+    --ok: #1f7a4a; --ok-bg: #e3f3ea; --no: #b3261e; --no-bg: #fbe7e5; --doubt: #8a5a00; --doubt-bg: #fdf1d6;
+    --accent: #1d4ed8; --best: #e3f3ea;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #141416; --surface: #1e1e21; --text: #f2f2f3; --muted: #a0a0a8; --line: #333338;
+      --ok: #5fd08f; --ok-bg: #173323; --no: #ff8a80; --no-bg: #3a1a18; --doubt: #f2c25b; --doubt-bg: #3a2e12;
+      --accent: #8ab4ff; --best: #173323;
+    }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--text);
+    font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; }
+  h1 { font-size: 1.6rem; margin: 0 0 4px; }
+  h2 { font-size: 1.2rem; margin: 36px 0 12px; }
+  .sub { color: var(--muted); margin: 0 0 20px; }
+  .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
+  .chip { border: 1px solid var(--line); background: var(--surface); color: var(--text);
+    border-radius: 999px; padding: 6px 14px; font-size: .9rem; cursor: pointer; }
+  .chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
+  select { font: inherit; font-size: .9rem; padding: 6px 10px; border-radius: 8px;
+    border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .card header { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
+  .card h3 { margin: 0; font-size: 1.05rem; }
+  .num { color: var(--muted); font-size: .85rem; }
+  .badge { white-space: nowrap; font-size: .8rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
+  .d-contacter { background: var(--ok-bg); color: var(--ok); }
+  .d-etudier { background: var(--doubt-bg); color: var(--doubt); }
+  .d-ecarter { background: var(--no-bg); color: var(--no); }
+  .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0; font-size: .95rem; }
+  .facts b { font-size: 1.15rem; }
+  .score { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 4px 0 2px; }
+  .score > span { display: block; height: 100%; background: var(--ok); }
+  .small { font-size: .85rem; color: var(--muted); }
+  .raison { margin: 10px 0; }
+  ul { margin: 4px 0 8px; padding-left: 20px; }
+  details { margin-top: 8px; }
+  summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
+  .crit { display: grid; grid-template-columns: 1.4em 1fr; gap: 2px 6px; font-size: .9rem; margin-top: 8px; }
+  a { color: var(--accent); }
+  .tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
+  table { border-collapse: collapse; font-size: .9rem; min-width: 100%; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
+  th:first-child, td:first-child { text-align: left; position: sticky; left: 0; background: var(--surface); z-index: 1; }
+  thead th { font-weight: 600; vertical-align: bottom; }
+  td.best { background: var(--best); font-weight: 600; }
+  tr.same td { color: var(--muted); }
+  .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 32px 16px; text-align: center; color: var(--muted); }
+  label.toggle { font-size: .9rem; display: flex; gap: 6px; align-items: center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Suivi des Mercedes GLA</h1>
+  <p class="sub" id="sub">Chargement…</p>
+
+  <div class="bar" id="filtres" role="group" aria-label="Filtrer par décision"></div>
+  <div class="bar">
+    <label class="small" for="tri">Trier par</label>
+    <select id="tri">
+      <option value="reco">Recommandation</option>
+      <option value="prix">Prix (moins cher d'abord)</option>
+      <option value="km">Kilométrage (plus bas d'abord)</option>
+      <option value="criteres">Critères confirmés</option>
+      <option value="date">Plus récentes</option>
+    </select>
+  </div>
+  <div class="cards" id="cards"></div>
+
+  <h2>Tableau comparatif</h2>
+  <div class="bar">
+    <label class="toggle"><input type="checkbox" id="diff"> Afficher seulement les différences</label>
+  </div>
+  <div class="tablewrap"><table id="table"></table></div>
+</div>
+
+<script>
+const DECISIONS = ["À contacter", "À étudier", "À écarter"];
+const CLASSE = { "À contacter": "d-contacter", "À étudier": "d-etudier", "À écarter": "d-ecarter" };
+const ICONE = { oui: "✅", non: "❌", doute: "❓" };
+const eur = n => n == null ? "?" : n.toLocaleString("fr-FR") + " €";
+const kms = n => n == null ? "?" : n.toLocaleString("fr-FR") + " km";
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+const nbOui = a => a.criteres.filter(c => c.statut === "oui").length;
+
+let annonces = [], filtre = "Toutes";
+
+function trier(liste) {
+  const t = document.getElementById("tri").value;
+  const cle = {
+    reco: a => [DECISIONS.indexOf(a.decision), -nbOui(a), a.prix ?? 1e9],
+    prix: a => [a.prix ?? 1e9], km: a => [a.kilometrage ?? 1e9],
+    criteres: a => [-nbOui(a), a.prix ?? 1e9], date: a => [-a.id],
+  }[t];
+  return [...liste].sort((x, y) => {
+    const a = cle(x), b = cle(y);
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return a[i] < b[i] ? -1 : 1;
+    return 0;
+  });
+}
+
+function rendreFiltres() {
+  const el = document.getElementById("filtres");
+  el.innerHTML = ["Toutes", ...DECISIONS].map(d => {
+    const n = d === "Toutes" ? annonces.length : annonces.filter(a => a.decision === d).length;
+    return `<button class="chip" aria-pressed="${d === filtre}" data-d="${d}">${d} (${n})</button>`;
+  }).join("");
+  el.querySelectorAll("button").forEach(b => b.onclick = () => { filtre = b.dataset.d; rendre(); });
+}
+
+function liste(titre, items) {
+  return items?.length ? `<div class="small">${titre}</div><ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>` : "";
+}
+
+function rendreCartes(visibles) {
+  const el = document.getElementById("cards");
+  if (!visibles.length) {
+    el.innerHTML = `<div class="empty">Aucune annonce pour l'instant. Envoie un lien au bot Telegram et elle apparaîtra ici.</div>`;
+    return;
+  }
+  el.innerHTML = visibles.map(a => {
+    const total = a.criteres.length || 1, oui = nbOui(a);
+    return `<article class="card">
+      <header>
+        <div><h3>${esc(a.titre)}</h3><span class="num">n°${a.id} · ajoutée le ${esc(a.date)}</span></div>
+        <span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span>
+      </header>
+      <div class="facts"><b>${eur(a.prix)}</b><span>${a.annee ?? "?"}</span><span>${kms(a.kilometrage)}</span></div>
+      <div class="score" aria-hidden="true"><span style="width:${100 * oui / total}%"></span></div>
+      <div class="small">${oui} critères sur ${total} confirmés</div>
+      <p class="raison">${esc(a.raison)}</p>
+      ${liste("Points forts", a.points_forts)}${liste("Points faibles", a.points_faibles)}
+      ${liste("À demander au vendeur", a.questions_vendeur)}
+      ${a.vendeur ? `<div class="small">Vendeur : ${esc(a.vendeur)}</div>` : ""}
+      ${a.url ? `<div><a href="${esc(a.url)}" target="_blank" rel="noopener">Voir l'annonce</a></div>` : ""}
+      <details><summary>Détail des critères</summary><div class="crit">
+        ${a.criteres.map(c => `<span>${ICONE[c.statut]}</span><span>${esc(c.critere)}${c.detail ? ` <span class="small">(${esc(c.detail)})</span>` : ""}</span>`).join("")}
+      </div></details>
+    </article>`;
+  }).join("");
+}
+
+function rendreTableau(visibles) {
+  const el = document.getElementById("table");
+  if (!visibles.length) { el.innerHTML = ""; return; }
+  const seulDiff = document.getElementById("diff").checked;
+  const noms = [];
+  visibles.forEach(a => a.criteres.forEach(c => { if (!noms.includes(c.critere)) noms.push(c.critere); }));
+  const min = k => Math.min(...visibles.map(a => a[k] ?? Infinity));
+  const max = k => Math.max(...visibles.map(a => a[k] ?? -Infinity));
+  const ligne = (label, cells, same) => (seulDiff && same && visibles.length > 1) ? "" :
+    `<tr class="${same && visibles.length > 1 ? "same" : ""}"><td>${label}</td>${cells.join("")}</tr>`;
+  const cell = (txt, best) => `<td class="${best ? "best" : ""}">${txt}</td>`;
+  const pMin = min("prix"), kMin = min("kilometrage"), aMax = max("annee"), oMax = Math.max(...visibles.map(nbOui));
+  let html = `<thead><tr><th>Annonce</th>${visibles.map(a =>
+    `<th>n°${a.id}<br><span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span></th>`).join("")}</tr></thead><tbody>`;
+  html += ligne("Prix", visibles.map(a => cell(eur(a.prix), a.prix === pMin && visibles.length > 1)), false);
+  html += ligne("Année", visibles.map(a => cell(a.annee ?? "?", a.annee === aMax && visibles.length > 1)), false);
+  html += ligne("Kilométrage", visibles.map(a => cell(kms(a.kilometrage), a.kilometrage === kMin && visibles.length > 1)), false);
+  html += ligne("Critères confirmés", visibles.map(a => cell(`${nbOui(a)} / ${a.criteres.length}`, nbOui(a) === oMax && visibles.length > 1)), false);
+  noms.forEach(n => {
+    const st = visibles.map(a => a.criteres.find(c => c.critere === n)?.statut ?? "doute");
+    html += ligne(esc(n), st.map(s => cell(ICONE[s])), st.every(s => s === st[0]));
+  });
+  el.innerHTML = html + "</tbody>";
+}
+
+function rendre() {
+  const visibles = trier(filtre === "Toutes" ? annonces : annonces.filter(a => a.decision === filtre));
+  rendreFiltres(); rendreCartes(visibles); rendreTableau(visibles);
+}
+
+document.getElementById("tri").onchange = rendre;
+document.getElementById("diff").onchange = rendre;
+
+fetch("annonces.json?" + Date.now()).then(r => r.json()).then(data => {
+  annonces = data;
+  const n = annonces.length, c = annonces.filter(a => a.decision === "À contacter").length;
+  document.getElementById("sub").textContent = n
+    ? `${n} annonce${n > 1 ? "s" : ""} suivie${n > 1 ? "s" : ""}, dont ${c} à contacter.`
+    : "Les annonces envoyées au bot Telegram s'affichent ici.";
+  rendre();
+}).catch(() => { document.getElementById("sub").textContent = "Impossible de charger les annonces."; });
+</script>
+</body>
+</html>
