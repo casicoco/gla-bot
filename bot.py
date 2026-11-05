@@ -223,12 +223,38 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     )
 
 
+# Telegram coupe les messages trop longs (plus de 4 096 caractères) en plusieurs morceaux.
+# On regroupe les morceaux qui arrivent à la suite avant d'analyser.
+_morceaux: dict[int, dict] = {}
+ATTENTE_MORCEAUX = 4  # secondes sans nouveau message avant d'analyser
+
+
 async def texte(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
     if not autorise(update):
         return
-    message = update.message.text
+    chat = update.effective_chat.id
+    groupe = _morceaux.get(chat)
+    if groupe:  # suite d'un message coupé : le premier morceau s'occupe de tout
+        groupe["textes"].append(update.message.text)
+        groupe["dernier"] = asyncio.get_running_loop().time()
+        return
+    boucle = asyncio.get_running_loop()
+    groupe = _morceaux[chat] = {"textes": [update.message.text], "dernier": boucle.time()}
+    while boucle.time() - groupe["dernier"] < ATTENTE_MORCEAUX:
+        await asyncio.sleep(0.5)
+    _morceaux.pop(chat, None)
+    await traiter_texte(update, context, "\n".join(groupe["textes"]))
+
+
+async def traiter_texte(update: Update, context: ContextTypes.DEFAULT_TYPE, message: str) -> None:
     liens = trouver_liens(message)[:3]
-    content, bloques = await contenu_des_liens(liens)
+    reste = message
+    for url in liens:
+        reste = reste.replace(url, "")
+    # Texte d'annonce collé (par exemple recopié depuis Chrome) : il contient déjà tout,
+    # inutile d'ouvrir le lien (et mobile.de le bloquerait).
+    texte_colle = len(reste.strip()) > 1000
+    content, bloques = ([], []) if texte_colle else await contenu_des_liens(liens)
 
     for url in bloques:
         nb = await attente.ajouter(update.effective_chat.id, url, message)
@@ -240,9 +266,6 @@ async def texte(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
             "Tu recevras la réponse ici. En attendant, tu peux aussi m'envoyer des captures d'écran."
         )
         # Rien d'autre à analyser : pas de page lue et le message n'est que le lien.
-        reste = message
-        for url in liens:
-            reste = reste.replace(url, "")
         if not content and len(reste.strip()) < 40:
             return
 
