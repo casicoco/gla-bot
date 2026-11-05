@@ -4,113 +4,6 @@
     "annee": 2025,
     "kilometrage": 10215,
     "prix": 37470,
-    "vendeur": "Concessionnaire Mercedes officiel, Allemagne",
-    "url": "https://www.mobile.de/fr/voiture/d%C3%A9tails.html?id=43073965082592",
-    "criteres": [
-      {
-        "critere": "Couleur blanche",
-        "statut": "oui",
-        "detail": "Blanc polaire (Polarweiß)"
-      },
-      {
-        "critere": "Label Junge Sterne",
-        "statut": "doute",
-        "detail": "Concessionnaire Mercedes officiel, mais l'annonce indique seulement « Garantie »"
-      },
-      {
-        "critere": "Pack Nuit",
-        "statut": "oui",
-        "detail": "Night-Paket"
-      },
-      {
-        "critere": "Phares MULTIBEAM LED (phares intelligents)",
-        "statut": "oui",
-        "detail": "Avec assistant de feux de route adaptatif"
-      },
-      {
-        "critere": "Pack Premium",
-        "statut": "doute",
-        "detail": "Advanced-Plus-Paket, probablement l'équivalent actuel"
-      },
-      {
-        "critere": "Pack stationnement avec caméra 360°",
-        "statut": "oui",
-        "detail": "Park-Paket mit 360-Kamera"
-      },
-      {
-        "critere": "Toit panoramique",
-        "statut": "oui",
-        "detail": "Panorama-Schiebedach"
-      },
-      {
-        "critere": "Recharge téléphone par induction",
-        "statut": "oui",
-        "detail": "Chargeur sans fil à l'avant"
-      },
-      {
-        "critere": "Apple CarPlay",
-        "statut": "oui",
-        "detail": "Et Android Auto"
-      },
-      {
-        "critere": "Volant chauffant",
-        "statut": "oui",
-        "detail": "Lenkradheizung"
-      },
-      {
-        "critere": "Sièges chauffants",
-        "statut": "oui",
-        "detail": "Conducteur et passager"
-      },
-      {
-        "critere": "Boule de remorquage (attelage)",
-        "statut": "oui",
-        "detail": "Attelage pivotant"
-      },
-      {
-        "critere": "Pneus 4 saisons",
-        "statut": "non",
-        "detail": "Pneus été, jantes 19 pouces"
-      },
-      {
-        "critere": "Coffre électrique",
-        "statut": "oui",
-        "detail": "EASY-PACK, ouverture mains libres"
-      },
-      {
-        "critere": "Sièges électriques",
-        "statut": "non",
-        "detail": "Sièges sport sans réglage électrique ni mémoire"
-      }
-    ],
-    "points_forts": [
-      "Très récente (mai 2025) et faible kilométrage (10 215 km)",
-      "Blanc polaire avec Pack Nuit",
-      "Phares MULTIBEAM LED, caméra 360°, toit panoramique, attelage",
-      "Vendue par un concessionnaire Mercedes officiel",
-      "Prix sous 40 000 €"
-    ],
-    "points_faibles": [
-      "Pas de sièges électriques",
-      "Pneus été uniquement",
-      "Label Junge Sterne non confirmé",
-      "Pack Premium à confirmer (Advanced-Plus-Paket)"
-    ],
-    "questions_vendeur": [
-      "La voiture est-elle vendue avec le label Junge Sterne ? Si oui, quelle est la durée de la garantie ?",
-      "L'Advanced-Plus-Paket contient-il les mêmes équipements que le Pack Premium ?",
-      "Est-il possible d'obtenir des pneus 4 saisons ou un geste sur le prix ?"
-    ],
-    "decision": "À contacter",
-    "raison": "C'est la première annonce suivie, donc pas encore de comparaison possible. Elle coche 11 critères sur 15, dont la couleur et les équipements principaux, pour une voiture quasi neuve à 37 470 €. Les deux doutes (Junge Sterne et Pack Premium) se règlent par un simple appel.",
-    "date": "2026-11-05",
-    "id": 1
-  },
-  {
-    "titre": "Mercedes-Benz GLA 200 AMG Line",
-    "annee": 2025,
-    "kilometrage": 10215,
-    "prix": 37470,
     "vendeur": "Concessionnaire Mercedes Jürgens, Lüdenscheid (Allemagne)",
     "url": "https://www.mobile.de/fr/voiture/d%C3%A9tails.html?id=43073965082592&vc=Car&blt=ADAPTIVE_BENDING_LIGHTS&cn=DE&dam=false&fe=PANORAMIC_GLASS_ROOF&fe=KEYLESS_ENTRY&fr=2024%3A2025&ft=PETROL&ms=17200%3B%3B54%3BAMG&p=%3A40000&pa=CAM_360_DEGREES&pa=AUTOMATIC_PARKING&spc=CRUISE_CONTROL&st=DEALER&tct=TRAILER_COUPLING_FIX&tr=AUTOMATIC_GEAR&sb=p&od=up&s=Car&searchId=3c776913-8a50-69b9-1908-fb9f80a0d043&ref=srp&refId=3c776913-8a50-69b9-1908-fb9f80a0d043",
     "criteres": [
@@ -212,6 +105,6 @@
     "decision": "À contacter",
     "raison": "Cette annonce semble être la même voiture que l'annonce #1 déjà suivie (même modèle, année, 10 215 km, 37 470 €, 11/15 critères). C'est une bonne candidate presque neuve et bien équipée, donc la décision « À contacter » reste valable. Il faut vérifier s'il s'agit d'un doublon et éviter de la suivre deux fois.",
     "date": "2026-11-05",
-    "id": 2
+    "id": 1
   }
 ]

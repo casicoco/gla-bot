@@ -9,6 +9,7 @@ import asyncio
 import json
 import logging
 import os
+import re
 import subprocess
 from datetime import datetime, timezone
 from pathlib import Path
@@ -46,6 +47,22 @@ class Fiche(BaseModel):
     questions_vendeur: list[str]
     decision: Literal["À contacter", "À étudier", "À écarter"]
     raison: str = Field(description="2 ou 3 phrases simples qui justifient la décision, en comparant aux autres annonces")
+
+
+def _cle_url(url: str) -> str:
+    """Identifiant stable d'un lien : l'id de l'annonce (mobile.de) ou le lien sans paramètres."""
+    if not url:
+        return ""
+    m = re.search(r"[?&]id=(\d+)", url)
+    return m.group(1) if m else url.split("?")[0].rstrip("/")
+
+
+def meme_voiture(a: dict, b: dict) -> bool:
+    """Même annonce si même lien, ou même prix, kilométrage et année."""
+    if _cle_url(a.get("url", "")) and _cle_url(a.get("url", "")) == _cle_url(b.get("url", "")):
+        return True
+    cles = ("prix", "kilometrage", "annee")
+    return all(a.get(k) is not None and a.get(k) == b.get(k) for k in cles)
 
 
 def charger() -> list[dict]:
@@ -141,7 +158,7 @@ async def enregistrer(client: anthropic.AsyncAnthropic, source: str, rapport: st
         data = fiche.model_dump(exclude={"est_une_annonce"})
         data["date"] = datetime.now(timezone.utc).strftime("%Y-%m-%d")
 
-        existante = next((a for a in annonces if data["url"] and a.get("url") == data["url"]), None)
+        existante = next((a for a in annonces if meme_voiture(a, data)), None)
         if existante:
             data["id"] = existante["id"]
             annonces[annonces.index(existante)] = data
