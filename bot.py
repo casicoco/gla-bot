@@ -38,6 +38,8 @@ from suivi import enregistrer
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(message)s", level=logging.INFO)
 log = logging.getLogger("gla_bot")
+# Les journaux de httpx affichent les adresses Telegram, qui contiennent le token du bot.
+logging.getLogger("httpx").setLevel(logging.WARNING)
 
 TELEGRAM_TOKEN = os.environ["TELEGRAM_BOT_TOKEN"]
 # Liste d'identifiants Telegram autorisés, séparés par des virgules.
@@ -47,7 +49,7 @@ ALLOWED_IDS = {int(x) for x in os.environ.get("ALLOWED_CHAT_IDS", "").replace(" 
 MODEL = "claude-opus-5-5"
 _depot = os.environ.get("GITHUB_REPOSITORY", "")
 PAGE_SUIVI = f"https://{_depot.split('/')[0]}.github.io/{_depot.split('/')[1]}/" if "/" in _depot else ""
-client = anthropic.AsyncAnthropic()
+client = anthropic.AsyncAnthropic(max_retries=5)
 
 liste_criteres = "\n".join(
     f"{i}. {c['nom']} (peut aussi s'écrire : {c['aussi_appele']})" for i, c in enumerate(CRITERES, 1)
@@ -121,28 +123,13 @@ async def analyser(content: list[dict]) -> str | None:
     return texte or None
 
 
-async def traiter(bot, chat_id: int, content: list[dict], source: str = "") -> None:
-    """Analyse une annonce, envoie le rapport sur Telegram et l'ajoute au suivi."""
-    await bot.send_message(chat_id, "🔎 Je regarde l'annonce, ça prend environ une minute...")
-    await bot.send_chat_action(chat_id, ChatAction.TYPING)
-    try:
-        rapport = await analyser(content)
-    except anthropic.APIError:
-        log.exception("Erreur API Claude")
-        await bot.send_message(chat_id, "Oups, une erreur s'est produite. Réessaie dans quelques minutes.")
-        return
-    if not rapport:
-        await bot.send_message(chat_id, "Désolé, je n'ai pas pu lire cette annonce. Essaie avec des captures d'écran.")
-        return
-    # Telegram limite un message à 4096 caractères.
-    for i in range(0, len(rapport), 4000):
-        await bot.send_message(chat_id, rapport[i : i + 4000])
-
+async def enregistrer_et_annoncer(bot, chat_id: int, source: str, rapport: str) -> bool:
+    """Ajoute l'annonce au suivi et prévient sur Telegram. Renvoie False si l'enregistrement a échoué."""
     try:
         fiche = await enregistrer(client, source, rapport)
     except Exception:
         log.exception("Erreur lors de l'enregistrement dans le suivi")
-        return
+        return False
     if fiche:
         lien = f"\nTableau de suivi : {PAGE_SUIVI}" if PAGE_SUIVI else ""
         await bot.send_message(
@@ -150,6 +137,34 @@ async def traiter(bot, chat_id: int, content: list[dict], source: str = "") -> N
             f"📋 Ajoutée au suivi (annonce n°{fiche['id']})\n"
             f"Décision : {fiche['decision']}\n{fiche['raison']}{lien}",
         )
+    return True
+
+
+async def traiter(bot, chat_id: int, content: list[dict], source: str = "", envoyer_rapport: bool = True) -> dict:
+    """Analyse une annonce, envoie le rapport sur Telegram et l'ajoute au suivi.
+
+    Renvoie {"rapport": texte ou None, "enregistre": bool} pour savoir s'il faut réessayer.
+    """
+    if envoyer_rapport:
+        await bot.send_message(chat_id, "🔎 Je regarde l'annonce, ça prend environ une minute...")
+        await bot.send_chat_action(chat_id, ChatAction.TYPING)
+    try:
+        rapport = await analyser(content)
+    except anthropic.APIError:
+        log.exception("Erreur API Claude")
+        if envoyer_rapport:
+            await bot.send_message(chat_id, "Oups, une erreur s'est produite. Réessaie dans quelques minutes.")
+        return {"rapport": None, "enregistre": False}
+    if not rapport:
+        if envoyer_rapport:
+            await bot.send_message(chat_id, "Désolé, je n'ai pas pu lire cette annonce. Essaie avec des captures d'écran.")
+        return {"rapport": None, "enregistre": False}
+    if envoyer_rapport:
+        # Telegram limite un message à 4096 caractères.
+        for i in range(0, len(rapport), 4000):
+            await bot.send_message(chat_id, rapport[i : i + 4000])
+    enregistre = await enregistrer_et_annoncer(bot, chat_id, source, rapport)
+    return {"rapport": rapport, "enregistre": enregistre}
 
 
 async def repondre(update: Update, context: ContextTypes.DEFAULT_TYPE, content: list[dict], source: str = "") -> None:
