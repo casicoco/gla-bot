@@ -538,5 +538,112 @@
     "raison": "C'est la mieux équipée de toutes (Junge Sterne, Multibeam, toit panoramique, hayon électrique), mais elle est argent alors que le blanc est indispensable, et elle coûte environ 3 400 € de plus que la n°1.",
     "date": "2026-11-05",
     "id": 5
+  },
+  {
+    "titre": "Mercedes-Benz GLA 200 AMG Line (véhicule de démonstration)",
+    "annee": 2026,
+    "kilometrage": 9432,
+    "prix": 39300,
+    "vendeur": "Autohaus Arnold, Neufahrn, Allemagne",
+    "url": "https://www.autoscout24.fr/offres/mercedes-benz-gla-200-amg-line-multibeam-panod-el-klappe-19-amg-line-amg-styling-night-paket-navi-keylessgo-autom-klima-sitzhzg-led-bc-essence-blanc-cat_ma47mo20343-31763dbf-e7f1-4ff1-911f-53f4c7b3d80d",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "Polarweiß"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "oui",
+        "detail": "Logo sur photo, garantie 24 mois"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "oui",
+        "detail": "Night-Paket"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "oui",
+        "detail": "Multibeam LED"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "non",
+        "detail": "AMG Line Advanced Plus, niveau en dessous"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "non",
+        "detail": "Caméra de recul seulement"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "oui",
+        "detail": "Panorama-Schiebedach"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": "Chargeur sans fil à l'avant"
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": "Avec Android Auto"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "oui",
+        "detail": "Lenkradheizung"
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": "Conducteur et passager"
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "non",
+        "detail": "Absente de la liste d'équipements"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "Non mentionnés"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": "Easy-Pack Heckklappe"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "doute",
+        "detail": "Seulement pack confort sièges et soutien lombaire"
+      }
+    ],
+    "points_forts": [
+      "Blanc avec Pack Nuit et Multibeam LED",
+      "Toit panoramique et coffre électrique",
+      "Label Junge Sterne avec garantie 24 mois",
+      "Immatriculé en 2026, faible kilométrage"
+    ],
+    "points_faibles": [
+      "Pas de Pack Premium",
+      "Pas de caméra 360°, seulement caméra de recul",
+      "Pas de boule de remorquage",
+      "Sièges électriques et pneus incertains",
+      "Le même vendeur propose des GLA proches au même prix mieux équipés"
+    ],
+    "questions_vendeur": [
+      "Quels pneus sont montés : été, hiver ou 4 saisons ?",
+      "Les sièges avant se règlent-ils électriquement, avec ou sans mémoire ?",
+      "Pouvez-vous confirmer le label Junge Sterne et envoyer le certificat ?"
+    ],
+    "decision": "À écarter",
+    "raison": "Avec 10/15 critères à 39 300 €, elle fait moins bien que la #1 (11/15 à 37 470 €) et la #2 (12/15 à 39 980 €). Il lui manque le Pack Premium, la caméra 360° et l'attelage, et le même vendeur propose des GLA mieux équipés au même prix.",
+    "date": "2026-11-10",
+    "id": 6
   }
 ]
