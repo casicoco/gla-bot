@@ -753,5 +753,114 @@
     "raison": "Avec 5 critères sur 15, c'est l'annonce la moins bien équipée de toutes celles suivies, et aussi la plus kilométrée. L'annonce #1 coûte environ 2 400 € de moins avec 11 critères confirmés et moins de kilomètres. Elle n'apporte rien de mieux que les autres pour un prix comparable.",
     "date": "2026-11-10",
     "id": 7
+  },
+  {
+    "titre": "Mercedes-Benz GLA 200 AMG Line",
+    "annee": 2025,
+    "kilometrage": 15434,
+    "prix": 39900,
+    "vendeur": "Concession Mercedes CAR Avenue, Alleur, Belgique",
+    "url": "https://www.autoscout24.be/fr/offres/mercedes-benz-gla-200-amg-line-essence-blanc-cat_ma47mo20343-8eb1e68c-8473-44e0-b2e5-2e638b003c64",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "Blanc polaire (code 149)"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "doute",
+        "detail": "Mercedes-Benz Certified, garantie 24 mois (équivalent belge)"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "non",
+        "detail": "Chromes autour des vitres et barres de toit chromées"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "non",
+        "detail": "Phares LED classiques"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "doute",
+        "detail": "Probablement absent ; le forfait Premium 24 est un forfait garage"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "doute",
+        "detail": "Caméras arrière et rétroviseurs citées, 360° non mentionné"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "non",
+        "detail": ""
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": "Pack Intégration smartphone"
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "non",
+        "detail": ""
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": "Sièges sport avant"
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "non",
+        "detail": "Seul le poids tractable est indiqué"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "Non mentionné"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": "Hayon électrique mains libres"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "non",
+        "detail": ""
+      }
+    ],
+    "points_forts": [
+      "Blanc polaire",
+      "Garantie Mercedes-Benz Certified 24 mois",
+      "Hayon électrique mains libres",
+      "Chargeur à induction et Apple CarPlay"
+    ],
+    "points_faibles": [
+      "Seulement 5/15 critères confirmés",
+      "Pas de Pack Nuit, ni MULTIBEAM, ni toit panoramique",
+      "Pas de volant chauffant, attelage ni sièges électriques",
+      "Forfait de préparation garage de 490 €",
+      "Incohérences dans l'annonce (intérieur, peinture)"
+    ],
+    "questions_vendeur": [
+      "La garantie Mercedes-Benz Certified 24 mois est-elle valable en France ?",
+      "La voiture a-t-elle le Pack Premium d'origine Mercedes ?",
+      "La caméra 360° est-elle présente ?",
+      "Quels pneus sont montés : été, hiver ou 4 saisons ?",
+      "Intérieur tissu ou alcantara/similicuir ? Peinture métallisée ou unie ?"
+    ],
+    "decision": "À écarter",
+    "raison": "Seulement 5 critères sur 15 confirmés, au même niveau que la #7 écartée, au même prix de 39 900 €. La #1 offre 11 critères pour 37 470 € avec moins de kilomètres. Cette annonce est nettement moins bien équipée pour un prix comparable.",
+    "date": "2026-11-10",
+    "id": 8
   }
 ]
