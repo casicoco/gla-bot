@@ -11,9 +11,19 @@ import os
 import re
 
 import anthropic
-from telegram import Update
+import json
+
+from telegram import (
+    InlineKeyboardButton,
+    InlineKeyboardMarkup,
+    KeyboardButton,
+    ReplyKeyboardMarkup,
+    Update,
+    WebAppInfo,
+)
 from telegram.constants import ChatAction
 from telegram.ext import (
+    CallbackQueryHandler,
     ApplicationBuilder,
     CommandHandler,
     ContextTypes,
@@ -130,6 +140,90 @@ async def analyser(content: list[dict]) -> str | None:
     return texte or None
 
 
+def clavier_suivi():
+    """Bouton en bas de Telegram qui ouvre la page de suivi dans Telegram (modifiable)."""
+    if not PAGE_SUIVI:
+        return None
+    return ReplyKeyboardMarkup(
+        [[KeyboardButton("📋 Suivi des annonces", web_app=WebAppInfo(url=PAGE_SUIVI))]],
+        resize_keyboard=True,
+        is_persistent=True,
+    )
+
+
+def boutons_annonce(fiche: dict) -> InlineKeyboardMarkup:
+    """Boutons 👍 / 👎 / 🗄 sous une annonce ; le choix actuel est coché."""
+    i, interet, archivee = fiche["id"], fiche.get("interet"), fiche.get("archivee", False)
+    return InlineKeyboardMarkup([[
+        InlineKeyboardButton(("✓ " if interet == "oui" else "") + "👍 Intéresse", callback_data=f"s:{i}:interet:oui"),
+        InlineKeyboardButton(("✓ " if interet == "non" else "") + "👎 Non", callback_data=f"s:{i}:interet:non"),
+        InlineKeyboardButton(("✓ " if archivee else "") + "🗄 Archiver", callback_data=f"s:{i}:archivee:{'0' if archivee else '1'}"),
+    ]])
+
+
+async def bouton_annonce(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Clic sur 👍 / 👎 / 🗄 sous une annonce."""
+    q = update.callback_query
+    if ALLOWED_IDS and q.from_user.id not in ALLOWED_IDS:
+        await q.answer()
+        return
+    try:
+        _, ident, champ, valeur = q.data.split(":")
+        ident = int(ident)
+    except ValueError:
+        await q.answer()
+        return
+    fiche = next((a for a in suivi.charger() if a["id"] == ident), {"id": ident})
+    if champ == "interet":
+        nouveau = None if fiche.get("interet") == valeur else valeur  # recliquer = annuler
+        changement = {"id": ident, "interet": nouveau}
+        texte_ok = {"oui": "👍 Noté : elle t'intéresse", "non": "👎 Noté : elle ne t'intéresse pas", None: "Choix annulé"}[nouveau]
+    else:
+        changement = {"id": ident, "archivee": valeur == "1"}
+        texte_ok = "🗄 Annonce archivée" if valeur == "1" else "Annonce sortie des archives"
+    await suivi.modifier([changement])
+    await q.answer(texte_ok)
+    fiche.update({k: v for k, v in changement.items() if k != "id"})
+    try:
+        await q.edit_message_reply_markup(boutons_annonce(fiche))
+    except Exception:
+        pass
+
+
+async def depuis_la_page(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Données envoyées par la page de suivi ouverte dans Telegram (bouton « Enregistrer »)."""
+    if not autorise(update):
+        return
+    try:
+        donnees = json.loads(update.effective_message.web_app_data.data)
+    except (ValueError, AttributeError):
+        await update.effective_message.reply_text("Je n'ai pas compris les changements envoyés.")
+        return
+    changements = donnees.get("changements") if isinstance(donnees, dict) else None
+    liens = donnees.get("liens") if isinstance(donnees, dict) else None
+    n = await suivi.modifier(changements) if isinstance(changements, list) else 0
+    liens = [l for l in (liens or []) if isinstance(l, str) and l.startswith(("http://", "https://"))][:5]
+    if n:
+        await update.effective_message.reply_text(
+            f"✅ {n} changement(s) enregistré(s). La page sera à jour dans une à deux minutes.",
+            reply_markup=clavier_suivi(),
+        )
+    for lien in liens:
+        await traiter_texte(update, context, lien)
+    if not n and not liens:
+        await update.effective_message.reply_text("Aucun changement à enregistrer.", reply_markup=clavier_suivi())
+
+
+async def ouvrir_suivi(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    if not autorise(update):
+        return
+    await update.message.reply_text(
+        "Appuie sur « 📋 Suivi des annonces » en bas pour ouvrir le tableau. Depuis Telegram, tu peux "
+        "marquer les voitures qui t'intéressent, les archiver, ajouter une note ou proposer un lien.",
+        reply_markup=clavier_suivi(),
+    )
+
+
 async def enregistrer_et_annoncer(bot, chat_id: int, source: str, rapport: str, annoncer: bool = True):
     """Ajoute l'annonce au suivi et prévient sur Telegram.
 
@@ -146,6 +240,7 @@ async def enregistrer_et_annoncer(bot, chat_id: int, source: str, rapport: str, 
             chat_id,
             f"📋 Ajoutée au suivi (annonce n°{fiche['id']})\n"
             f"Décision : {fiche['decision']}\n{fiche['raison']}{lien}",
+            reply_markup=boutons_annonce(fiche),
         )
     return fiche
 
@@ -219,7 +314,9 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
         "• ou des captures d'écran (plusieurs d'un coup, c'est possible)\n\n"
         "Si un site bloque la lecture, je mets le lien en attente (/attente pour les voir).\n\n"
         f"Je vérifie ces critères :\n{criteres}\n\n"
-        f"Ton identifiant Telegram : {update.effective_user.id}"
+        f"Ton identifiant Telegram : {update.effective_user.id}\n\n"
+        "📋 Le bouton « Suivi des annonces » en bas ouvre le tableau de suivi.",
+        reply_markup=clavier_suivi(),
     )
 
 
@@ -326,6 +423,9 @@ def main() -> None:
     app = ApplicationBuilder().token(TELEGRAM_TOKEN).concurrent_updates(True).build()
     app.add_handler(CommandHandler(["start", "aide"], start))
     app.add_handler(CommandHandler("attente", voir_attente))
+    app.add_handler(CommandHandler("suivi", ouvrir_suivi))
+    app.add_handler(MessageHandler(filters.StatusUpdate.WEB_APP_DATA, depuis_la_page))
+    app.add_handler(CallbackQueryHandler(bouton_annonce, pattern=r"^s:"))
     app.add_handler(MessageHandler(filters.PHOTO | filters.Document.IMAGE, photo))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, texte))
     log.info("Bot démarré")

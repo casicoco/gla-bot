@@ -161,6 +161,10 @@ async def enregistrer(client: anthropic.AsyncAnthropic, source: str, rapport: st
         existante = next((a for a in annonces if meme_voiture(a, data)), None)
         if existante:
             data["id"] = existante["id"]
+            # Garder les choix faits sur la page de suivi (intérêt, archive, note).
+            for cle in CHAMPS_PERSO:
+                if cle in existante:
+                    data[cle] = existante[cle]
             annonces[annonces.index(existante)] = data
         else:
             data["id"] = max((a["id"] for a in annonces), default=0) + 1
@@ -173,3 +177,45 @@ async def enregistrer(client: anthropic.AsyncAnthropic, source: str, rapport: st
         except subprocess.CalledProcessError as e:
             log.error("Impossible de pousser la base : %s", e.stderr)
         return data
+
+
+# Champs remplis à la main depuis la page de suivi (jamais écrasés par une nouvelle analyse).
+CHAMPS_PERSO = ("interet", "archivee", "note")
+INTERETS = ("oui", "non", None)
+
+
+def appliquer(annonces: list[dict], changements: list[dict]) -> int:
+    """Applique les changements venus de la page (sans rien enregistrer). Renvoie le nombre appliqué."""
+    par_id = {a["id"]: a for a in annonces}
+    n = 0
+    for c in changements[:100]:
+        if not isinstance(c, dict):
+            continue
+        a = par_id.get(c.get("id"))
+        if a is None:
+            continue
+        if "interet" in c and c["interet"] in INTERETS:
+            a["interet"] = c["interet"]
+            n += 1
+        if "archivee" in c and isinstance(c["archivee"], bool):
+            a["archivee"] = c["archivee"]
+            n += 1
+        if "note" in c and isinstance(c["note"], str):
+            a["note"] = c["note"].strip()[:500]
+            n += 1
+    return n
+
+
+async def modifier(changements: list[dict]) -> int:
+    """Enregistre les changements faits depuis la page de suivi ou les boutons Telegram."""
+    async with verrou:
+        await asyncio.to_thread(synchroniser)
+        annonces = charger()
+        n = appliquer(annonces, changements)
+        if n:
+            FICHIER.write_text(json.dumps(annonces, ensure_ascii=False, indent=2))
+            try:
+                await asyncio.to_thread(pousser, f"Suivi : {n} changement(s) depuis la page")
+            except subprocess.CalledProcessError as e:
+                log.error("Impossible de pousser les changements : %s", e.stderr)
+        return n

@@ -4,52 +4,71 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Suivi GLA</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
   :root {
     --bg: #f6f5f2; --surface: #ffffff; --text: #1d1d1f; --muted: #6b6b70; --line: #e4e2dd;
     --ok: #1f7a4a; --ok-bg: #e3f3ea; --no: #b3261e; --no-bg: #fbe7e5; --doubt: #8a5a00; --doubt-bg: #fdf1d6;
-    --accent: #1d4ed8; --best: #e3f3ea;
+    --accent: #1d4ed8; --accent-bg: #e6edfd; --best: #e3f3ea;
   }
   @media (prefers-color-scheme: dark) {
     :root {
       --bg: #141416; --surface: #1e1e21; --text: #f2f2f3; --muted: #a0a0a8; --line: #333338;
       --ok: #5fd08f; --ok-bg: #173323; --no: #ff8a80; --no-bg: #3a1a18; --doubt: #f2c25b; --doubt-bg: #3a2e12;
-      --accent: #8ab4ff; --best: #173323;
+      --accent: #8ab4ff; --accent-bg: #1c2740; --best: #173323;
     }
   }
   * { box-sizing: border-box; }
   body { margin: 0; background: var(--bg); color: var(--text);
     font: 16px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 48px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 20px 16px 96px; }
   h1 { font-size: 1.6rem; margin: 0 0 4px; }
   h2 { font-size: 1.2rem; margin: 36px 0 12px; }
-  .sub { color: var(--muted); margin: 0 0 20px; }
+  .sub { color: var(--muted); margin: 0 0 16px; }
   .bar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 16px; }
   .chip { border: 1px solid var(--line); background: var(--surface); color: var(--text);
     border-radius: 999px; padding: 6px 14px; font-size: .9rem; cursor: pointer; }
   .chip[aria-pressed="true"] { background: var(--text); color: var(--bg); border-color: var(--text); }
-  select { font: inherit; font-size: .9rem; padding: 6px 10px; border-radius: 8px;
+  select, input[type=url], textarea { font: inherit; font-size: .95rem; padding: 8px 10px; border-radius: 8px;
     border: 1px solid var(--line); background: var(--surface); color: var(--text); }
-  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); }
+  textarea { width: 100%; resize: vertical; min-height: 2.6em; }
+  .info { background: var(--accent-bg); border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; font-size: .92rem; }
+  .proposer { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 14px 16px; margin-bottom: 16px; }
+  .proposer form { display: flex; gap: 8px; margin-top: 8px; }
+  .proposer input { flex: 1; min-width: 0; }
+  .btn { border: 1px solid var(--line); background: var(--surface); color: var(--text); border-radius: 10px;
+    padding: 7px 12px; font: inherit; font-size: .9rem; cursor: pointer; }
+  .btn.primaire { background: var(--accent); border-color: var(--accent); color: #fff; }
+  .btn[aria-pressed="true"].b-oui { background: var(--ok-bg); border-color: var(--ok); color: var(--ok); font-weight: 600; }
+  .btn[aria-pressed="true"].b-non { background: var(--no-bg); border-color: var(--no); color: var(--no); font-weight: 600; }
+  .btn[aria-pressed="true"].b-arch { background: var(--doubt-bg); border-color: var(--doubt); color: var(--doubt); font-weight: 600; }
+  .cards { display: grid; gap: 14px; grid-template-columns: repeat(auto-fill, minmax(min(320px, 100%), 1fr)); }
   .card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px; }
+  .card.archivee { opacity: .7; }
+  .card.modifiee { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent); }
   .card header { display: flex; justify-content: space-between; gap: 8px; align-items: flex-start; }
   .card h3 { margin: 0; font-size: 1.05rem; }
+  .badges { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
   .num { color: var(--muted); font-size: .85rem; }
   .badge { white-space: nowrap; font-size: .8rem; font-weight: 600; padding: 3px 10px; border-radius: 999px; }
-  .d-contacter { background: var(--ok-bg); color: var(--ok); }
-  .d-etudier { background: var(--doubt-bg); color: var(--doubt); }
-  .d-ecarter { background: var(--no-bg); color: var(--no); }
+  .d-contacter, .i-oui { background: var(--ok-bg); color: var(--ok); }
+  .d-etudier, .i-arch { background: var(--doubt-bg); color: var(--doubt); }
+  .d-ecarter, .i-non { background: var(--no-bg); color: var(--no); }
+  .i-envoi { background: var(--accent-bg); color: var(--accent); }
   .facts { display: flex; flex-wrap: wrap; gap: 4px 16px; margin: 10px 0; font-size: .95rem; }
   .facts b { font-size: 1.15rem; }
   .score { height: 8px; background: var(--line); border-radius: 4px; overflow: hidden; margin: 4px 0 2px; }
   .score > span { display: block; height: 100%; background: var(--ok); }
   .small { font-size: .85rem; color: var(--muted); }
   .raison { margin: 10px 0; }
+  .note { background: var(--bg); border-radius: 10px; padding: 8px 10px; margin: 8px 0; font-size: .92rem; white-space: pre-wrap; }
+  .actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+  .actions textarea { margin-top: 4px; }
   ul { margin: 4px 0 8px; padding-left: 20px; }
   details { margin-top: 8px; }
   summary { cursor: pointer; color: var(--accent); font-size: .9rem; }
   .crit { display: grid; grid-template-columns: 1.4em 1fr; gap: 2px 6px; font-size: .9rem; margin-top: 8px; }
-  a { color: var(--accent); }
+  a { color: var(--accent); word-break: break-word; }
   .tablewrap { overflow-x: auto; background: var(--surface); border: 1px solid var(--line); border-radius: 14px; }
   table { border-collapse: collapse; font-size: .9rem; min-width: 100%; }
   th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: center; white-space: nowrap; }
@@ -57,11 +76,14 @@
   thead th { font-weight: 600; vertical-align: bottom; }
   td.best { background: var(--best); font-weight: 600; }
   tr.same td { color: var(--muted); }
-  .attente { background: var(--doubt-bg); color: var(--text); border-radius: 14px; padding: 12px 16px; margin-bottom: 20px; }
+  .attente { background: var(--doubt-bg); color: var(--text); border-radius: 14px; padding: 12px 16px; margin-bottom: 16px; }
   .attente b { color: var(--doubt); }
   .attente ul { margin: 6px 0 0; word-break: break-all; font-size: .85rem; }
   .empty { background: var(--surface); border: 1px dashed var(--line); border-radius: 14px; padding: 32px 16px; text-align: center; color: var(--muted); }
   label.toggle { font-size: .9rem; display: flex; gap: 6px; align-items: center; }
+  .barre-envoi { position: fixed; left: 0; right: 0; bottom: 0; background: var(--surface); border-top: 1px solid var(--line);
+    padding: 12px 16px; display: none; gap: 12px; align-items: center; justify-content: center; flex-wrap: wrap; }
+  .barre-envoi.visible { display: flex; }
 </style>
 </head>
 <body>
@@ -69,9 +91,10 @@
   <h1>Suivi des Mercedes GLA</h1>
   <p class="sub" id="sub">Chargement…</p>
 
+  <div id="mode"></div>
   <div id="attente"></div>
 
-  <div class="bar" id="filtres" role="group" aria-label="Filtrer par décision"></div>
+  <div class="bar" id="filtres" role="group" aria-label="Filtrer les annonces"></div>
   <div class="bar">
     <label class="small" for="tri">Trier par</label>
     <select id="tri">
@@ -88,8 +111,11 @@
   <div class="bar">
     <label class="toggle"><input type="checkbox" id="diff"> Afficher seulement les différences</label>
   </div>
+  <p class="small">Les annonces archivées n'apparaissent pas dans le tableau.</p>
   <div class="tablewrap"><table id="table"></table></div>
 </div>
+
+<div class="barre-envoi" id="barre"></div>
 
 <script>
 const DECISIONS = ["À contacter", "À étudier", "À écarter"];
@@ -100,12 +126,45 @@ const kms = n => n == null ? "?" : n.toLocaleString("fr-FR") + " km";
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const nbOui = a => a.criteres.filter(c => c.statut === "oui").length;
 
-let annonces = [], filtre = "Toutes";
+// La page est modifiable seulement quand elle est ouverte depuis le bot Telegram :
+// les changements partent alors au bot (seules les personnes autorisées peuvent l'utiliser).
+const TG = window.Telegram && window.Telegram.WebApp;
+const EDITION = !!(TG && TG.initData);
+if (EDITION) { TG.ready(); TG.expand(); }
+
+let annonces = [], filtre = "Actives";
+const modifs = {};        // changements pas encore envoyés : { id: { interet, archivee, note } }
+const liensProposes = []; // liens à envoyer au bot
+let envoyes = {};         // changements envoyés il y a peu, pas encore visibles dans les données
+
+// Changements envoyés juste avant (Telegram ferme la page après l'envoi) : on les affiche
+// pendant quelques minutes, le temps que GitHub republie la page.
+try {
+  const e = JSON.parse(localStorage.getItem("envoyes") || "null");
+  if (e && Date.now() - e.t < 4 * 60 * 1000) envoyes = e.changements || {};
+} catch (_) {}
+
+const val = (a, champ) => {
+  if (modifs[a.id] && champ in modifs[a.id]) return modifs[a.id][champ];
+  if (envoyes[a.id] && champ in envoyes[a.id]) return envoyes[a.id][champ];
+  return champ === "archivee" ? !!a.archivee : (a[champ] ?? (champ === "note" ? "" : null));
+};
+const changer = (id, champ, valeur) => {
+  const a = annonces.find(x => x.id === id);
+  const origine = champ === "archivee" ? !!a.archivee : (a[champ] ?? (champ === "note" ? "" : null));
+  modifs[id] = modifs[id] || {};
+  if (valeur === origine && !(envoyes[id] && champ in envoyes[id])) delete modifs[id][champ];
+  else modifs[id][champ] = valeur;
+  if (!Object.keys(modifs[id]).length) delete modifs[id];
+  rendre();
+};
+const nbModifs = () => Object.values(modifs).reduce((n, m) => n + Object.keys(m).length, 0) + liensProposes.length;
 
 function trier(liste) {
   const t = document.getElementById("tri").value;
+  const interet = a => ({ oui: 0, null: 1, non: 2 })[val(a, "interet")] ?? 1;
   const cle = {
-    reco: a => [DECISIONS.indexOf(a.decision), -nbOui(a), a.prix ?? 1e9],
+    reco: a => [interet(a), DECISIONS.indexOf(a.decision), -nbOui(a), a.prix ?? 1e9],
     prix: a => [a.prix ?? 1e9], km: a => [a.kilometrage ?? 1e9],
     criteres: a => [-nbOui(a), a.prix ?? 1e9], date: a => [-a.id],
   }[t];
@@ -116,36 +175,77 @@ function trier(liste) {
   });
 }
 
+const FILTRES = {
+  "Actives": a => !val(a, "archivee"),
+  "👍 Intéressée": a => !val(a, "archivee") && val(a, "interet") === "oui",
+  "À contacter": a => !val(a, "archivee") && a.decision === "À contacter",
+  "À étudier": a => !val(a, "archivee") && a.decision === "À étudier",
+  "À écarter": a => !val(a, "archivee") && a.decision === "À écarter",
+  "🗄 Archivées": a => val(a, "archivee"),
+};
+
 function rendreFiltres() {
   const el = document.getElementById("filtres");
-  el.innerHTML = ["Toutes", ...DECISIONS].map(d => {
-    const n = d === "Toutes" ? annonces.length : annonces.filter(a => a.decision === d).length;
-    return `<button class="chip" aria-pressed="${d === filtre}" data-d="${d}">${d} (${n})</button>`;
+  el.innerHTML = Object.keys(FILTRES).map(f => {
+    const n = annonces.filter(FILTRES[f]).length;
+    return `<button class="chip" aria-pressed="${f === filtre}" data-f="${esc(f)}">${esc(f)} (${n})</button>`;
   }).join("");
-  el.querySelectorAll("button").forEach(b => b.onclick = () => { filtre = b.dataset.d; rendre(); });
+  el.querySelectorAll("button").forEach(b => b.onclick = () => { filtre = b.dataset.f; rendre(); });
 }
 
 function liste(titre, items) {
   return items?.length ? `<div class="small">${titre}</div><ul>${items.map(i => `<li>${esc(i)}</li>`).join("")}</ul>` : "";
 }
 
+function rendreMode() {
+  const el = document.getElementById("mode");
+  if (!EDITION) {
+    el.innerHTML = `<div class="info">Pour marquer les voitures qui t'intéressent, les archiver, ajouter une note
+      ou proposer un lien, ouvre cette page depuis le bot Telegram (bouton « 📋 Suivi des annonces »).</div>`;
+    return;
+  }
+  el.innerHTML = `<div class="proposer"><b>Proposer une annonce</b>
+    <div class="small">Colle le lien d'une annonce : le bot la vérifiera et l'ajoutera au suivi.</div>
+    <form id="form-lien"><input type="url" id="lien" placeholder="https://…" required aria-label="Lien de l'annonce">
+    <button class="btn" type="submit">Ajouter</button></form>
+    ${liensProposes.length ? `<ul>${liensProposes.map((l, i) => `<li>${esc(l.slice(0, 70))}… <button class="btn" data-retirer="${i}" aria-label="Retirer ce lien">✕</button></li>`).join("")}</ul>` : ""}
+  </div>`;
+  document.getElementById("form-lien").onsubmit = e => {
+    e.preventDefault();
+    const v = document.getElementById("lien").value.trim();
+    if (/^https?:\/\//.test(v) && !liensProposes.includes(v) && liensProposes.length < 5) liensProposes.push(v);
+    rendre();
+  };
+  el.querySelectorAll("[data-retirer]").forEach(b => b.onclick = () => { liensProposes.splice(+b.dataset.retirer, 1); rendre(); });
+}
+
 function rendreCartes(visibles) {
   const el = document.getElementById("cards");
   if (!visibles.length) {
-    el.innerHTML = `<div class="empty">Aucune annonce pour l'instant. Envoie un lien au bot Telegram et elle apparaîtra ici.</div>`;
+    el.innerHTML = `<div class="empty">${annonces.length ? "Aucune annonce dans cette catégorie."
+      : "Aucune annonce pour l'instant. Envoie un lien au bot Telegram et elle apparaîtra ici."}</div>`;
     return;
   }
   el.innerHTML = visibles.map(a => {
     const total = a.criteres.length || 1, oui = nbOui(a);
-    return `<article class="card">
+    const interet = val(a, "interet"), archivee = val(a, "archivee"), note = val(a, "note");
+    const enCours = !modifs[a.id] && envoyes[a.id];
+    return `<article class="card${archivee ? " archivee" : ""}${modifs[a.id] ? " modifiee" : ""}">
       <header>
         <div><h3>${esc(a.titre)}</h3><span class="num">n°${a.id} · ajoutée le ${esc(a.date)}</span></div>
-        <span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span>
+        <div class="badges">
+          <span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span>
+          ${interet === "oui" ? `<span class="badge i-oui">👍 Intéressée</span>` : ""}
+          ${interet === "non" ? `<span class="badge i-non">👎 Pas intéressée</span>` : ""}
+          ${archivee ? `<span class="badge i-arch">🗄 Archivée</span>` : ""}
+          ${enCours ? `<span class="badge i-envoi">⏳ En cours d'enregistrement</span>` : ""}
+        </div>
       </header>
       <div class="facts"><b>${eur(a.prix)}</b><span>${a.annee ?? "?"}</span><span>${kms(a.kilometrage)}</span></div>
       <div class="score" aria-hidden="true"><span style="width:${100 * oui / total}%"></span></div>
       <div class="small">${oui} critères sur ${total} confirmés</div>
       <p class="raison">${esc(a.raison)}</p>
+      ${!EDITION && note ? `<div class="note">📝 ${esc(note)}</div>` : ""}
       ${liste("Points forts", a.points_forts)}${liste("Points faibles", a.points_faibles)}
       ${liste("À demander au vendeur", a.questions_vendeur)}
       ${a.vendeur ? `<div class="small">Vendeur : ${esc(a.vendeur)}</div>` : ""}
@@ -153,28 +253,44 @@ function rendreCartes(visibles) {
       <details><summary>Détail des critères</summary><div class="crit">
         ${a.criteres.map(c => `<span>${ICONE[c.statut]}</span><span>${esc(c.critere)}${c.detail ? ` <span class="small">(${esc(c.detail)})</span>` : ""}</span>`).join("")}
       </div></details>
+      ${EDITION ? `<div class="actions" data-id="${a.id}">
+        <button class="btn b-oui" aria-pressed="${interet === "oui"}" data-act="oui">👍 Elle m'intéresse</button>
+        <button class="btn b-non" aria-pressed="${interet === "non"}" data-act="non">👎 Pas pour moi</button>
+        <button class="btn b-arch" aria-pressed="${archivee}" data-act="arch">${archivee ? "🗄 Sortir des archives" : "🗄 Archiver"}</button>
+        <label class="small" style="width:100%">Note (ex. « doublon de la n°2 », « vendeur appelé »)
+          <textarea data-act="note" maxlength="500" rows="2">${esc(note)}</textarea></label>
+      </div>` : ""}
     </article>`;
   }).join("");
+  el.querySelectorAll(".actions").forEach(bloc => {
+    const id = +bloc.dataset.id, a = annonces.find(x => x.id === id);
+    bloc.querySelector('[data-act="oui"]').onclick = () => changer(id, "interet", val(a, "interet") === "oui" ? null : "oui");
+    bloc.querySelector('[data-act="non"]').onclick = () => changer(id, "interet", val(a, "interet") === "non" ? null : "non");
+    bloc.querySelector('[data-act="arch"]').onclick = () => changer(id, "archivee", !val(a, "archivee"));
+    bloc.querySelector('[data-act="note"]').onchange = e => changer(id, "note", e.target.value.trim());
+  });
 }
 
-function rendreTableau(visibles) {
+function rendreTableau() {
   const el = document.getElementById("table");
+  const visibles = trier(annonces.filter(a => !val(a, "archivee")));
   if (!visibles.length) { el.innerHTML = ""; return; }
   const seulDiff = document.getElementById("diff").checked;
   const noms = [];
   visibles.forEach(a => a.criteres.forEach(c => { if (!noms.includes(c.critere)) noms.push(c.critere); }));
   const min = k => Math.min(...visibles.map(a => a[k] ?? Infinity));
   const max = k => Math.max(...visibles.map(a => a[k] ?? -Infinity));
-  const ligne = (label, cells, same) => (seulDiff && same && visibles.length > 1) ? "" :
-    `<tr class="${same && visibles.length > 1 ? "same" : ""}"><td>${label}</td>${cells.join("")}</tr>`;
+  const plusieurs = visibles.length > 1;
+  const ligne = (label, cells, same) => (seulDiff && same && plusieurs) ? "" :
+    `<tr class="${same && plusieurs ? "same" : ""}"><td>${label}</td>${cells.join("")}</tr>`;
   const cell = (txt, best) => `<td class="${best ? "best" : ""}">${txt}</td>`;
   const pMin = min("prix"), kMin = min("kilometrage"), aMax = max("annee"), oMax = Math.max(...visibles.map(nbOui));
   let html = `<thead><tr><th>Annonce</th>${visibles.map(a =>
-    `<th>n°${a.id}<br><span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span></th>`).join("")}</tr></thead><tbody>`;
-  html += ligne("Prix", visibles.map(a => cell(eur(a.prix), a.prix === pMin && visibles.length > 1)), false);
-  html += ligne("Année", visibles.map(a => cell(a.annee ?? "?", a.annee === aMax && visibles.length > 1)), false);
-  html += ligne("Kilométrage", visibles.map(a => cell(kms(a.kilometrage), a.kilometrage === kMin && visibles.length > 1)), false);
-  html += ligne("Critères confirmés", visibles.map(a => cell(`${nbOui(a)} / ${a.criteres.length}`, nbOui(a) === oMax && visibles.length > 1)), false);
+    `<th>n°${a.id}${val(a, "interet") === "oui" ? " 👍" : val(a, "interet") === "non" ? " 👎" : ""}<br><span class="badge ${CLASSE[a.decision]}">${esc(a.decision)}</span></th>`).join("")}</tr></thead><tbody>`;
+  html += ligne("Prix", visibles.map(a => cell(eur(a.prix), a.prix === pMin && plusieurs)), false);
+  html += ligne("Année", visibles.map(a => cell(a.annee ?? "?", a.annee === aMax && plusieurs)), false);
+  html += ligne("Kilométrage", visibles.map(a => cell(kms(a.kilometrage), a.kilometrage === kMin && plusieurs)), false);
+  html += ligne("Critères confirmés", visibles.map(a => cell(`${nbOui(a)} / ${a.criteres.length}`, nbOui(a) === oMax && plusieurs)), false);
   noms.forEach(n => {
     const st = visibles.map(a => a.criteres.find(c => c.critere === n)?.statut ?? "doute");
     html += ligne(esc(n), st.map(s => cell(ICONE[s])), st.every(s => s === st[0]));
@@ -182,22 +298,58 @@ function rendreTableau(visibles) {
   el.innerHTML = html + "</tbody>";
 }
 
+function envoyer() {
+  const changements = Object.entries(modifs).map(([id, m]) => ({ id: +id, ...m }));
+  const donnees = JSON.stringify({ changements, liens: liensProposes });
+  if (new Blob([donnees]).size > 4000) {
+    alert("Trop de changements d'un coup (les notes sont peut-être trop longues). Enregistre en deux fois.");
+    return;
+  }
+  try {
+    const deja = { ...envoyes };
+    changements.forEach(c => { deja[c.id] = { ...(deja[c.id] || {}), ...c }; delete deja[c.id].id; });
+    localStorage.setItem("envoyes", JSON.stringify({ t: Date.now(), changements: deja }));
+  } catch (_) {}
+  TG.sendData(donnees); // Telegram ferme la page et transmet les changements au bot
+}
+
+function rendreEnvoi() {
+  if (!EDITION) return;
+  const n = nbModifs(), barre = document.getElementById("barre");
+  if (TG.MainButton) {
+    if (n) { TG.MainButton.setText(`Enregistrer (${n})`); TG.MainButton.show(); } else TG.MainButton.hide();
+  }
+  // Barre de secours si le bouton de Telegram n'est pas disponible.
+  barre.classList.toggle("visible", !!n && !TG.MainButton);
+  barre.innerHTML = n ? `<span>${n} changement(s) à enregistrer</span><button class="btn primaire" id="envoyer">Enregistrer</button>` : "";
+  const b = document.getElementById("envoyer");
+  if (b) b.onclick = envoyer;
+}
+
 function rendre() {
-  const visibles = trier(filtre === "Toutes" ? annonces : annonces.filter(a => a.decision === filtre));
-  rendreFiltres(); rendreCartes(visibles); rendreTableau(visibles);
+  const visibles = trier(annonces.filter(FILTRES[filtre]));
+  rendreMode(); rendreFiltres(); rendreCartes(visibles); rendreTableau(); rendreEnvoi();
 }
 
 document.getElementById("tri").onchange = rendre;
 document.getElementById("diff").onchange = rendre;
+if (EDITION && TG.MainButton) TG.MainButton.onClick(envoyer);
 
 fetch("annonces.json?" + Date.now()).then(r => r.json()).then(data => {
   annonces = data;
-  const n = annonces.length, c = annonces.filter(a => a.decision === "À contacter").length;
-  document.getElementById("sub").textContent = n
-    ? `${n} annonce${n > 1 ? "s" : ""} suivie${n > 1 ? "s" : ""}, dont ${c} à contacter.`
+  // Oublier les changements « en cours » déjà visibles dans les données publiées.
+  for (const [id, m] of Object.entries(envoyes)) {
+    const a = annonces.find(x => x.id === +id);
+    if (a && Object.entries(m).every(([k, v]) => (k === "archivee" ? !!a.archivee : (a[k] ?? (k === "note" ? "" : null))) === v)) delete envoyes[id];
+  }
+  const actives = annonces.filter(a => !val(a, "archivee"));
+  const c = actives.filter(a => a.decision === "À contacter").length;
+  const i = actives.filter(a => val(a, "interet") === "oui").length;
+  document.getElementById("sub").textContent = annonces.length
+    ? `${actives.length} annonce${actives.length > 1 ? "s" : ""} suivie${actives.length > 1 ? "s" : ""}, dont ${c} à contacter${i ? ` et ${i} qui t'intéresse${i > 1 ? "nt" : ""}` : ""}.`
     : "Les annonces envoyées au bot Telegram s'affichent ici.";
   rendre();
-}).catch(() => { document.getElementById("sub").textContent = "Impossible de charger les annonces."; });
+}).catch(() => { document.getElementById("sub").textContent = "Impossible de charger les annonces."; rendreMode(); });
 
 fetch("en_attente.json?" + Date.now()).then(r => r.json()).then(liens => {
   if (!liens.length) return;

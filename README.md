@@ -8,6 +8,15 @@ Chaque annonce est ajoutée à la page de suivi : https://casicoco.github.io/gla
 - `lecteur.py` : ouvre la page dans Chrome, accepte les cookies, déplie les « voir plus »
 - `suivi.py` : enregistre chaque annonce dans `docs/annonces.json` (la page de suivi)
 
+## Page de suivi modifiable
+
+Ouverte depuis le bot Telegram (bouton « 📋 Suivi des annonces », ou `/suivi`), la page
+permet de marquer une voiture 👍 / 👎, de l'archiver (les doublons par exemple), d'ajouter
+une note et de proposer un lien. Le bouton « Enregistrer » envoie les changements au bot,
+qui les enregistre dans `docs/annonces.json` (champs `interet`, `archivee`, `note`).
+Ouverte dans un navigateur normal, la page est en lecture seule. Les mêmes boutons
+👍 / 👎 / 🗄 apparaissent aussi sous chaque nouvelle annonce dans Telegram.
+
 ## Fonctionnement
 
 Le bot tourne en continu sur GitHub Actions (`.github/workflows/bot.yml`).
