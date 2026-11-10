@@ -862,5 +862,119 @@
     "raison": "Seulement 5 critères sur 15 confirmés, au même niveau que la #7 écartée, au même prix de 39 900 €. La #1 offre 11 critères pour 37 470 € avec moins de kilomètres. Cette annonce est nettement moins bien équipée pour un prix comparable.",
     "date": "2026-11-10",
     "id": 8
+  },
+  {
+    "titre": "Mercedes-Benz GLA 200 AMG Line",
+    "annee": 2025,
+    "kilometrage": 6199,
+    "prix": 39880,
+    "vendeur": "Gaillard Auto (importateur, agence de Strasbourg, France ; véhicule en concession allemande)",
+    "url": "",
+    "criteres": [
+      {
+        "critere": "Couleur blanche",
+        "statut": "oui",
+        "detail": "« Blanc »"
+      },
+      {
+        "critere": "Label Junge Sterne",
+        "statut": "doute",
+        "detail": "Garantie 24 mois, label non cité"
+      },
+      {
+        "critere": "Pack Nuit",
+        "statut": "oui",
+        "detail": "« Night » dans le titre"
+      },
+      {
+        "critere": "Phares MULTIBEAM LED (phares intelligents)",
+        "statut": "doute",
+        "detail": "« MLB » en abrégé, liste peu fiable (« phares laser »)"
+      },
+      {
+        "critere": "Pack Premium",
+        "statut": "doute",
+        "detail": "Non cité, seulement quelques éléments (hayon électrique, éclairage d'ambiance)"
+      },
+      {
+        "critere": "Pack stationnement avec caméra 360°",
+        "statut": "doute",
+        "detail": "« Caméra d'aide au stationnement », peut-être caméra de recul seule"
+      },
+      {
+        "critere": "Toit panoramique",
+        "statut": "oui",
+        "detail": "« Pano » dans le titre et la liste"
+      },
+      {
+        "critere": "Recharge téléphone par induction",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Apple CarPlay",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Volant chauffant",
+        "statut": "non",
+        "detail": "Absent d'une liste détaillée"
+      },
+      {
+        "critere": "Sièges chauffants",
+        "statut": "oui",
+        "detail": ""
+      },
+      {
+        "critere": "Boule de remorquage (attelage)",
+        "statut": "oui",
+        "detail": "« AHK » et « attache remorque »"
+      },
+      {
+        "critere": "Pneus 4 saisons",
+        "statut": "doute",
+        "detail": "Non indiqué, jantes 20 pouces donc plutôt pneus été"
+      },
+      {
+        "critere": "Coffre électrique",
+        "statut": "oui",
+        "detail": "« Hayon arrière électrique »"
+      },
+      {
+        "critere": "Sièges électriques",
+        "statut": "doute",
+        "detail": "Seulement réglage lombaire indiqué"
+      }
+    ],
+    "points_forts": [
+      "Très faible kilométrage (6 199 km) et récente (09/2025)",
+      "Blanc avec Pack Nuit, toit panoramique et attelage",
+      "Garantie 24 mois",
+      "Probablement phares MULTIBEAM (« MLB »)"
+    ],
+    "points_faibles": [
+      "Prix total 42 165 € avec frais d'import, hors carte grise et malus",
+      "Pas de volant chauffant",
+      "Label Junge Sterne non confirmé",
+      "Caméra 360° et Pack Premium incertains",
+      "Jantes 20 pouces, pneus probablement été"
+    ],
+    "questions_vendeur": [
+      "La voiture est-elle vendue avec le label Junge Sterne ? La garantie de 24 mois est-elle une garantie Junge Sterne ?",
+      "« MLB » veut-il bien dire phares MULTIBEAM LED ?",
+      "La voiture a-t-elle le Pack Premium ?",
+      "La caméra fait-elle une vue à 360° (Park-Paket mit 360°-Kamera) ou seulement une caméra de recul ?",
+      "Y a-t-il vraiment pas de volant chauffant (Lenkradheizung) ?",
+      "Quels pneus sont montés : été, hiver ou 4 saisons ?",
+      "Les sièges avant sont-ils entièrement électriques (avec mémoire) ?",
+      "Que veut dire « Spectial » dans le titre ?",
+      "Pouvez-vous envoyer la liste d'équipements Mercedes d'origine (annonce allemande ou fiche d'options) ?",
+      "Le prix de 39 880 € est-il négociable, vu les 2 285 € de frais d'import ?"
+    ],
+    "decision": "À étudier",
+    "raison": "Avec 8/15 critères confirmés et très peu de kilomètres, elle ressemble à la #4 (6 150 km, 37 900 €, À étudier), mais coûte 2 000 € de plus et même 42 165 € avec les frais d'import. Elle reste moins convaincante que la #1 (11/15 critères pour 37 470 €), mais plusieurs doutes (MULTIBEAM, caméra 360°, Premium) pourraient être levés avec la fiche d'options d'origine.",
+    "date": "2026-11-10",
+    "id": 9
   }
 ]
