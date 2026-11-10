@@ -351,6 +351,16 @@ async def traiter_texte(update: Update, context: ContextTypes.DEFAULT_TYPE, mess
     # Texte d'annonce collé (par exemple recopié depuis Chrome) : il contient déjà tout,
     # inutile d'ouvrir le lien (et mobile.de le bloquerait).
     texte_colle = len(reste.strip()) > 1000
+    if not liens and len(reste.strip()) < 300:
+        # Simple question ou message court, pas une annonce : pas d'analyse (ni d'appel payant).
+        await update.message.reply_text(
+            "Pour vérifier une annonce, envoie-moi son lien, son texte complet copié-collé, "
+            "ou des captures d'écran.\n\n"
+            "Pour voir et modifier le tableau de suivi, appuie sur la barre « 📋 Suivi des annonces » "
+            "tout en bas de la conversation (sous le champ où tu écris).",
+            reply_markup=clavier_suivi(),
+        )
+        return
     content, bloques = ([], []) if texte_colle else await contenu_des_liens(liens)
 
     for url in bloques:
