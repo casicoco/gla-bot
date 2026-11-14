@@ -982,8 +982,8 @@
     "annee": 2025,
     "kilometrage": 13106,
     "prix": 42990,
-    "vendeur": "Kroely, Sausheim (près de Mulhouse), France",
-    "url": "https://occasion.mercedes-benz.fr/vehicle?28569+Mercedes-Benz+GLA+180+AMG+Line&vehicle=19032982&referrer=vehicles",
+    "vendeur": "KROELY, Sausheim (68), France",
+    "url": "https://occasion.mercedes-benz.fr/vehicle?vehicle=19032982",
     "criteres": [
       {
         "critere": "Couleur blanche",
@@ -992,33 +992,33 @@
       },
       {
         "critere": "Label Junge Sterne",
-        "statut": "doute",
-        "detail": "Label « Mercedes-Benz Certified » (2 ans de garantie), équivalent français mais pas le nom exact"
+        "statut": "oui",
+        "detail": "Mercedes-Benz Certified, garantie 2 ans"
       },
       {
         "critere": "Pack Nuit",
         "statut": "oui",
-        "detail": "« Forfait nuit » (code P55) + Pack Sport Black"
+        "detail": "Traduit « Forfait nuit », plus Pack Sport Black"
       },
       {
         "critere": "Phares MULTIBEAM LED (phares intelligents)",
         "statut": "oui",
-        "detail": "Avec assistant de feux de route adaptatif"
+        "detail": ""
       },
       {
         "critere": "Pack Premium",
         "statut": "oui",
-        "detail": "Pack Premium Plus"
+        "detail": "Premium Plus"
       },
       {
         "critere": "Pack stationnement avec caméra 360°",
         "statut": "oui",
-        "detail": "Caméra 360° et assistant de stationnement"
+        "detail": ""
       },
       {
         "critere": "Toit panoramique",
         "statut": "oui",
-        "detail": "Toit ouvrant panoramique"
+        "detail": ""
       },
       {
         "critere": "Recharge téléphone par induction",
@@ -1028,17 +1028,17 @@
       {
         "critere": "Apple CarPlay",
         "statut": "oui",
-        "detail": "Apple CarPlay et Android Auto"
+        "detail": "Android Auto aussi"
       },
       {
         "critere": "Volant chauffant",
         "statut": "non",
-        "detail": "Absent de la liste d'équipements détaillée"
+        "detail": "Absent de la liste d'équipements"
       },
       {
         "critere": "Sièges chauffants",
         "statut": "oui",
-        "detail": "Sièges avant chauffants"
+        "detail": "À l'avant"
       },
       {
         "critere": "Boule de remorquage (attelage)",
@@ -1048,41 +1048,38 @@
       {
         "critere": "Pneus 4 saisons",
         "statut": "doute",
-        "detail": "Type de pneus non précisé (jantes 20 pouces)"
+        "detail": "Non précisé, jantes AMG 20 pouces"
       },
       {
         "critere": "Coffre électrique",
         "statut": "oui",
-        "detail": "Hayon EASY-PACK avec ouverture au pied"
+        "detail": "Ouverture mains libres"
       },
       {
         "critere": "Sièges électriques",
         "statut": "oui",
-        "detail": "Sièges avant électriques à mémoire"
+        "detail": "À l'avant, avec mémoire"
       }
     ],
     "points_forts": [
       "Blanc polaire avec Pack Nuit et Pack Sport Black",
-      "Pack Premium Plus, MULTIBEAM LED, caméra 360°",
-      "Toit panoramique, hayon électrique au pied, sièges électriques à mémoire",
-      "Garantie Mercedes-Benz Certified de 2 ans"
+      "Pack Premium Plus, caméra 360°, toit panoramique",
+      "Coffre électrique mains libres et sièges électriques à mémoire",
+      "Label Mercedes-Benz Certified, garantie 2 ans"
     ],
     "points_faibles": [
-      "Prix le plus élevé de toutes les annonces suivies (42 990 €)",
-      "Moteur 180 (136 ch), moins puissant que les GLA 200",
+      "Prix le plus élevé des annonces suivies (42 990 €)",
+      "Moteur 180, moins puissant que les GLA 200",
       "Pas de volant chauffant ni d'attelage",
       "Type de pneus inconnu"
     ],
     "questions_vendeur": [
-      "La garantie « Mercedes-Benz Certified » offre-t-elle les mêmes avantages que Junge Sterne ? Quelle durée et quelle couverture ?",
-      "Quels pneus sont montés : été, hiver ou 4 saisons ? Possible d'avoir des pneus 4 saisons à l'achat ?",
-      "Pouvez-vous confirmer l'absence de volant chauffant ?",
-      "Est-il possible de poser une boule de remorquage d'origine Mercedes, et à quel prix ?",
-      "Une remise sur le prix est-elle envisageable ?"
+      "Quels pneus sont montés : 4 saisons, été ou hiver ?",
+      "Pouvez-vous poser une boule de remorquage d'origine Mercedes, et à quel prix ?"
     ],
     "decision": "À écarter",
-    "raison": "Avec 11 critères sur 15, elle fait jeu égal avec la #1 (GLA 200, 10 215 km, 37 470 €), qui coûte 5 500 € de moins avec un moteur plus puissant. Elle est aussi plus chère que la #3 (GLA 180, 41 970 €), déjà écartée pour un niveau d'équipement comparable.",
-    "date": "2026-11-10",
+    "raison": "C'est la même voiture que l'annonce #10 (même kilométrage, même prix), déjà écartée. Avec 12/15 critères, elle égale la #2 mais coûte 3 000 € de plus, et la #1 (GLA 200, 11/15) est 5 500 € moins chère.",
+    "date": "2026-11-14",
     "id": 10
   }
 ]
