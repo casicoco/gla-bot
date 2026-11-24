@@ -2,20 +2,20 @@
   {
     "titre": "Mercedes-Benz GLA 200 AMG Line",
     "annee": 2025,
-    "kilometrage": 10215,
-    "prix": 37470,
-    "vendeur": "Concessionnaire Mercedes Jürgens, Lüdenscheid (Allemagne)",
-    "url": "https://www.mobile.de/fr/voiture/d%C3%A9tails.html?id=43073965082592&vc=Car&blt=ADAPTIVE_BENDING_LIGHTS&cn=DE&dam=false&fe=PANORAMIC_GLASS_ROOF&fe=KEYLESS_ENTRY&fr=2024%3A2025&ft=PETROL&ms=17200%3B%3B54%3BAMG&p=%3A40000&pa=CAM_360_DEGREES&pa=AUTOMATIC_PARKING&spc=CRUISE_CONTROL&st=DEALER&tct=TRAILER_COUPLING_FIX&tr=AUTOMATIC_GEAR&sb=p&od=up&s=Car&searchId=3c776913-8a50-69b9-1908-fb9f80a0d043&ref=srp&refId=3c776913-8a50-69b9-1908-fb9f80a0d043",
+    "kilometrage": 9987,
+    "prix": 36880,
+    "vendeur": "Concessionnaire Mercedes Jürgens, Lüdenscheid, Allemagne",
+    "url": "https://www.mobile.de/fr/voiture/d%C3%A9tails.html?id=43073965082592",
     "criteres": [
       {
         "critere": "Couleur blanche",
         "statut": "oui",
-        "detail": "Blanc polaire (Polarweiß)"
+        "detail": "Polarweiß"
       },
       {
         "critere": "Label Junge Sterne",
         "statut": "doute",
-        "detail": "Logo sur la bannière du garage, mais l'annonce indique seulement « Garantie »"
+        "detail": "Logo seulement sur la bannière du garage, garantie non précisée"
       },
       {
         "critere": "Pack Nuit",
@@ -25,12 +25,12 @@
       {
         "critere": "Phares MULTIBEAM LED (phares intelligents)",
         "statut": "oui",
-        "detail": "Avec assistant feux de route intelligent"
+        "detail": "Avec assistant de feux de route adaptatif"
       },
       {
         "critere": "Pack Premium",
         "statut": "non",
-        "detail": "Pack Advanced Plus, un niveau en dessous"
+        "detail": "Pack Advanced Plus (niveau en dessous)"
       },
       {
         "critere": "Pack stationnement avec caméra 360°",
@@ -40,7 +40,7 @@
       {
         "critere": "Toit panoramique",
         "statut": "oui",
-        "detail": "Toit ouvrant panoramique"
+        "detail": "Panorama-Schiebedach"
       },
       {
         "critere": "Recharge téléphone par induction",
@@ -65,46 +65,44 @@
       {
         "critere": "Boule de remorquage (attelage)",
         "statut": "oui",
-        "detail": "Boule escamotable"
+        "detail": "Escamotable, 1 800 kg"
       },
       {
         "critere": "Pneus 4 saisons",
         "statut": "non",
-        "detail": "Pneus été (Sommerreifen)"
+        "detail": "Pneus été"
       },
       {
         "critere": "Coffre électrique",
         "statut": "oui",
-        "detail": "EASY-PACK et ouverture au pied"
+        "detail": "EASY-PACK, ouverture sans les mains"
       },
       {
         "critere": "Sièges électriques",
         "statut": "non",
-        "detail": "Ni sièges électriques ni Memory-Paket ; Sitzkomfort-Paket seulement"
+        "detail": "Seul le soutien lombaire est réglable"
       }
     ],
     "points_forts": [
-      "Presque neuve (05/2025, 10 215 km)",
-      "Un seul propriétaire, sans accident, carnet d'entretien suivi",
-      "Blanc polaire avec Pack Nuit",
-      "Caméra 360°, toit panoramique, attelage, coffre électrique",
-      "Garantie d'usine Mercedes probablement encore en cours"
+      "Prix le plus bas de toutes les annonces suivies (36 880 €)",
+      "11 critères sur 15 confirmés",
+      "Kilométrage modéré (9 987 km)",
+      "Concessionnaire Mercedes officiel, un seul propriétaire, sans accident",
+      "Attelage escamotable, toit panoramique, caméra 360°, Pack Nuit"
     ],
     "points_faibles": [
-      "Pas de Pack Premium (Advanced Plus seulement)",
+      "Pas de Pack Premium (Advanced Plus)",
       "Pneus été au lieu de 4 saisons",
-      "Sièges non électriques",
+      "Pas de sièges électriques",
       "Label Junge Sterne non confirmé"
     ],
     "questions_vendeur": [
-      "La voiture est-elle vendue avec le label Junge Sterne ? Si oui, quelle est la durée de la garantie ?",
-      "Jusqu'à quand court la garantie d'usine Mercedes ?",
-      "Pouvez-vous confirmer que les sièges avant se règlent à la main, et non électriquement ?",
-      "Est-il possible d'avoir des pneus 4 saisons à la place des pneus été, ou un jeu de pneus en plus ?"
+      "La voiture est-elle vendue avec le label Junge Sterne (Junge Sterne Garantie) ? Si oui, pour combien de temps ?",
+      "Est-il possible d'obtenir des pneus 4 saisons ou un jeu de pneus hiver ?"
     ],
     "decision": "À contacter",
-    "raison": "Presque neuve (2025, 10 215 km), blanche et bien équipée avec 11 critères confirmés, au prix le plus bas des annonces blanches suivies. C'est la meilleure candidate pour l'instant.",
-    "date": "2026-11-05",
+    "raison": "C'est l'annonce la moins chère suivie (36 880 €), avec 11 critères sur 15 comme la #1 (37 470 €, À contacter), pour un kilométrage proche. Seul le label Junge Sterne reste à confirmer auprès du vendeur.",
+    "date": "2026-11-24",
     "id": 1
   },
   {
